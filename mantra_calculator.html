@@ -1,339 +1,89 @@
-html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Калькулятор чисел и мантр</title>
+    <title>🫖 Чайник-калькулятор</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8edf5 100%);
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        
-        .container {
-            max-width: 650px;
-            width: 100%;
-            background: white;
-            border-radius: 28px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
-            margin-top: 20px;
-        }
-        
-        h1 {
-            font-size: 28px;
-            color: #1a2332;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .subtitle {
-            color: #5a6e85;
-            font-size: 14px;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #eef2f7;
-        }
-        
-        .mode-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .mode-btn {
-            flex: 1;
-            min-width: 140px;
-            padding: 12px 16px;
-            border: 2px solid #dce3ed;
-            border-radius: 16px;
-            background: white;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            color: #4a5e77;
-            transition: all 0.3s;
-            text-align: center;
-        }
-        
-        .mode-btn:hover {
-            border-color: #8aa3c9;
-            background: #f8faff;
-        }
-        
-        .mode-btn.active {
-            border-color: #4a7cf7;
-            background: #eef4ff;
-            color: #1a3b6b;
-            box-shadow: 0 0 0 3px rgba(74, 124, 247, 0.15);
-        }
-        
-        .mode-btn .badge {
-            display: block;
-            font-size: 11px;
-            font-weight: 400;
-            color: #7a8ea5;
-            margin-top: 3px;
-        }
-        
-        textarea {
-            width: 100%;
-            height: 110px;
-            padding: 16px;
-            font-size: 20px;
-            border: 2px solid #dce3ed;
-            border-radius: 18px;
-            font-family: inherit;
-            resize: vertical;
-            transition: 0.3s;
-            background: #fafcff;
-        }
-        
-        textarea:focus {
-            border-color: #4a7cf7;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(74, 124, 247, 0.1);
-            background: white;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin: 16px 0 20px 0;
-            flex-wrap: wrap;
-        }
-        
-        .btn-group button {
-            flex: 1;
-            min-width: 100px;
-            padding: 14px 18px;
-            border: none;
-            border-radius: 40px;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        
-        .btn-calc {
-            background: #1a3b6b;
-            color: white;
-        }
-        
-        .btn-calc:hover {
-            background: #0f2a4f;
-            transform: scale(1.02);
-        }
-        
-        .btn-clear {
-            background: #e9edf4;
-            color: #1f2a3a;
-        }
-        
-        .btn-clear:hover {
-            background: #d5dce6;
-        }
-        
-        .btn-example {
-            background: #eef4ff;
-            color: #1a3b6b;
-            border: 2px solid #dce3ed;
-        }
-        
-        .btn-example:hover {
-            background: #dce8ff;
-        }
-        
-        .result-box {
-            background: #f3f7fe;
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid #dce4ef;
-            margin-bottom: 16px;
-        }
-        
-        .result-number {
-            font-size: 56px;
-            font-weight: 800;
-            color: #0b1e33;
-            line-height: 1.2;
-        }
-        
-        .result-number .secondary {
-            font-size: 24px;
-            font-weight: 400;
-            color: #7a8ea5;
-        }
-        
-        .result-label {
-            font-size: 13px;
-            color: #5a6e85;
-            margin-top: 2px;
-            letter-spacing: 0.5px;
-        }
-        
-        .result-sum {
-            font-size: 15px;
-            color: #2c405a;
-            background: white;
-            padding: 6px 18px;
-            border-radius: 40px;
-            display: inline-block;
-            margin-top: 6px;
-            border: 1px solid #dce4ef;
-        }
-        
-        .interpretation {
-            margin-top: 10px;
-            padding: 12px 16px;
-            background: #eef4ff;
-            border-radius: 14px;
-            font-size: 15px;
-            color: #1a3b6b;
-            border-left: 4px solid #4a7cf7;
-            text-align: left;
-        }
-        
-        .steps {
-            background: #f7faff;
-            border-radius: 16px;
-            padding: 14px 16px;
-            max-height: 200px;
-            overflow-y: auto;
-            font-size: 14px;
-            font-family: 'Courier New', monospace;
-            border: 1px solid #e2e9f3;
-            line-height: 2.2;
-            margin-top: 4px;
-        }
-        
-        .steps .tag {
-            display: inline-block;
-            background: white;
-            padding: 0 12px;
-            border-radius: 30px;
-            border: 1px solid #d0dbe8;
-            font-size: 13px;
-            margin: 2px 3px 2px 0;
-        }
-        
-        .steps .highlight {
-            background: #d4e2ff;
-            border-color: #6f9aff;
-            font-weight: 700;
-        }
-        
-        .steps .final-tag {
-            background: #1a3b6b;
-            color: white;
-            font-weight: 700;
-            border-color: #1a3b6b;
-        }
-        
-        .error {
-            color: #c73b3b;
-            font-size: 14px;
-            padding: 8px 16px;
-            background: #ffe9e9;
-            border-radius: 30px;
-            display: none;
-            margin-top: 8px;
-        }
-        
-        .error.show {
-            display: inline-block;
-        }
-        
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #4f667e;
-            margin: 10px 0 4px 0;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        
-        .badge {
-            background: #eef3fa;
-            padding: 3px 16px;
-            border-radius: 30px;
-        }
-        
-        .table-ref {
-            margin-top: 16px;
-            padding: 14px 16px;
-            background: #f8faff;
-            border-radius: 14px;
-            border: 1px solid #e2e9f3;
-            font-size: 13px;
-            line-height: 1.8;
-        }
-        
-        .table-ref strong {
-            color: #1a3b6b;
-        }
-        
-        .table-ref .row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .table-ref .num {
-            display: inline-block;
-            min-width: 20px;
-            font-weight: 700;
-            color: #1a3b6b;
-        }
-        
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 13px;
-            color: #7a8ea5;
-            border-top: 1px solid #eef2f7;
-            padding-top: 16px;
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                padding: 18px;
-            }
-            .result-number {
-                font-size: 40px;
-            }
-            .mode-btn {
-                min-width: 100px;
-                font-size: 13px;
-                padding: 10px 12px;
-            }
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#fdf6ed,#f0e6d8);min-height:100vh;padding:20px;display:flex;justify-content:center;align-items:flex-start}
+        .container{max-width:750px;width:100%;background:#fffdf9;border-radius:32px;padding:32px;box-shadow:0 20px 60px rgba(120,80,40,0.15);margin-top:20px;border:1px solid #f0e4d4}
+        .header{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+        .header .kettle{font-size:44px;line-height:1}
+        .header h1{font-size:30px;color:#5a3e2b;font-weight:800;letter-spacing:-0.5px}
+        .header h1 span{color:#b8863a}
+        .subtitle{color:#8b7355;font-size:15px;margin-bottom:22px;padding-bottom:16px;border-bottom:2px dashed #e8dccc;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .subtitle .emoji{font-size:20px}
+        .mode-selector{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+        .mode-btn{flex:1;min-width:130px;padding:13px 16px;border:2px solid #e8dccc;border-radius:16px;background:#fffcf8;cursor:pointer;font-weight:600;font-size:15px;color:#6b5340;transition:all .3s;text-align:center}
+        .mode-btn:hover{border-color:#c4a88a;background:#fff6ed}
+        .mode-btn.active{border-color:#b8863a;background:#fcf3e8;color:#5a3e2b;box-shadow:0 0 0 3px rgba(184,134,58,0.15)}
+        .mode-btn .badge{display:block;font-size:11px;font-weight:400;color:#a0806a;margin-top:3px}
+        textarea{width:100%;height:110px;padding:16px 18px;font-size:20px;border:2px solid #e8dccc;border-radius:18px;font-family:inherit;resize:vertical;transition:.3s;background:#fdfaf6}
+        textarea:focus{border-color:#b8863a;outline:none;box-shadow:0 0 0 4px rgba(184,134,58,0.1);background:#fffcf8}
+        textarea::placeholder{color:#bba28c}
+        .btn-group{display:flex;gap:12px;margin:16px 0 20px;flex-wrap:wrap}
+        .btn-group button{flex:1;min-width:90px;padding:14px 18px;border:none;border-radius:40px;font-size:17px;font-weight:600;cursor:pointer;transition:.2s}
+        .btn-calc{background:#b8863a;color:#fff;box-shadow:0 4px 15px rgba(184,134,58,0.3)}
+        .btn-calc:hover{background:#9e6f2e;transform:scale(1.02)}
+        .btn-clear{background:#e8dccc;color:#5a3e2b}
+        .btn-clear:hover{background:#dccfc0}
+        .btn-example{background:#fcf3e8;color:#7a5f45;border:2px solid #e8dccc}
+        .btn-example:hover{background:#f5e8d8}
+        .btn-decode{background:#6b8a6b;color:#fff;box-shadow:0 4px 15px rgba(80,120,80,0.3)}
+        .btn-decode:hover{background:#4a6a4a;transform:scale(1.02)}
+        .result-box{background:#fcf6ee;border-radius:20px;padding:20px;text-align:center;border:1px solid #e8dccc;margin-bottom:16px}
+        .result-number{font-size:60px;font-weight:800;color:#4a3222;line-height:1.2}
+        .result-number .secondary{font-size:24px;font-weight:400;color:#a0806a}
+        .result-label{font-size:13px;color:#8b7355;margin-top:2px;letter-spacing:0.5px}
+        .result-sum{font-size:15px;color:#5a3e2b;background:#fffcf8;padding:6px 18px;border-radius:40px;display:inline-block;margin-top:6px;border:1px solid #e8dccc}
+        .interpretation{margin-top:10px;padding:12px 16px;background:#fcf3e8;border-radius:14px;font-size:15px;color:#5a3e2b;border-left:4px solid #b8863a;text-align:left;display:none}
+        .steps{background:#fdfaf6;border-radius:16px;padding:14px 16px;max-height:300px;overflow-y:auto;font-size:13px;font-family:'Courier New',monospace;border:1px solid #e8dccc;line-height:2.2;margin-top:4px}
+        .steps .tag{display:inline-block;background:#fffcf8;padding:0 12px;border-radius:30px;border:1px solid #e0d0c0;font-size:12px;margin:2px 3px 2px 0}
+        .steps .highlight{background:#fcf3e8;border-color:#b8863a;font-weight:700}
+        .steps .final-tag{background:#b8863a;color:#fff;font-weight:700;border-color:#b8863a}
+        .steps .digit-tag{background:#e8f0e8;border-color:#8aaa8a;color:#2a5a2a}
+        .steps .vowel-tag{background:#fce8e8;border-color:#e8a0a0;color:#8a2a2a}
+        .steps .consonant-tag{background:#e8ecf8;border-color:#8a9ac8;color:#2a3a6a}
+        .steps .section-title{display:block;font-weight:700;color:#5a3e2b;margin:4px 0;font-family:'Segoe UI',sans-serif}
+        .error{color:#b34a3a;font-size:14px;padding:8px 16px;background:#fde8e0;border-radius:30px;display:none;margin-top:8px}
+        .error.show{display:inline-block}
+        .info-row{display:flex;justify-content:space-between;font-size:13px;color:#8b7355;margin:10px 0 4px;flex-wrap:wrap;gap:6px}
+        .badge{background:#f5ede4;padding:3px 16px;border-radius:30px}
+        .table-ref{margin-top:16px;padding:14px 16px;background:#fdfaf6;border-radius:14px;border:1px solid #e8dccc;font-size:13px;line-height:1.8}
+        .table-ref strong{color:#5a3e2b}
+        .table-ref .num{color:#b8863a;font-weight:700}
+        .table-ref .note{color:#a0806a;font-size:12px;font-style:italic}
+        .footer{margin-top:20px;text-align:center;font-size:13px;color:#a0806a;border-top:1px solid #e8dccc;padding-top:16px}
+        .share-buttons{margin:12px 0 6px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+        .share-btn{padding:8px 18px;border-radius:30px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:.2s;color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+        .share-btn:hover{transform:scale(1.05);opacity:0.9}
+        .share-telegram{background:#0088cc}
+        .share-whatsapp{background:#25d366}
+        .share-vk{background:#0077ff}
+        .share-copy{background:#8b7355}
+        .letters-info{background:#fcf3e8;border-radius:14px;padding:12px 16px;margin-top:8px;border:1px solid #e8dccc;font-size:14px;display:none;text-align:left}
+        .letters-info .vowel{color:#b34a3a;font-weight:700}
+        .letters-info .consonant{color:#2a3a6a;font-weight:700}
+        .letters-info .soft{color:#8a6a2a;font-weight:700}
+        .letters-info .hard{color:#2a5a6a;font-weight:700}
+        .letters-info .label{color:#8b7355;font-size:13px}
+        .letters-info .sub{color:#8b7355;font-size:12px;margin-left:6px}
+        @media(max-width:480px){.container{padding:18px}.result-number{font-size:44px}.mode-btn{min-width:100px;font-size:13px;padding:10px 12px}.header h1{font-size:24px}}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🔢 Калькулятор</h1>
-    <div class="subtitle">Перевод букв в цифры и сведение к одному числу</div>
+    <div class="header">
+        <div class="kettle">🫖</div>
+        <h1>Чайник-<span>калькулятор</span></h1>
+    </div>
+    <div class="subtitle">
+        <span class="emoji">📖</span> Код → буквы → цифры → одно число
+        <span style="margin-left:auto;font-size:13px;color:#bba28c;">☕ для чайников</span>
+    </div>
     
-    <!-- Выбор режима -->
     <div class="mode-selector">
         <button class="mode-btn active" data-mode="classic" onclick="setMode('classic')">
             📚 Классический
@@ -345,53 +95,55 @@ html
         </button>
     </div>
     
-    <!-- Поле ввода -->
-    <textarea id="inputText" placeholder="Введите слово или текст..."></textarea>
+    <textarea id="inputText" placeholder="Введите слово, код или мантру...&#10;Например: 3691408358 или ом намаха шивая">3691408358</textarea>
     
-    <!-- Кнопки -->
     <div class="btn-group">
-        <button class="btn-calc" onclick="calculate()">🧮 Рассчитать</button>
+        <button class="btn-calc" onclick="calculate()">🧮 Заварить!</button>
+        <button class="btn-decode" onclick="decodeCode()">🔀 Код → буквы</button>
         <button class="btn-clear" onclick="clearAll()">✕ Очистить</button>
         <button class="btn-example" onclick="loadExample()">📋 Пример</button>
     </div>
     
-    <!-- Результат -->
     <div class="result-box">
-        <div class="result-number" id="resultNumber">
-            <span class="secondary">—</span>
-        </div>
-        <div class="result-label" id="resultLabel">ИТОГОВОЕ ЧИСЛО</div>
+        <div class="result-number" id="resultNumber"><span class="secondary">—</span></div>
+        <div class="result-label" id="resultLabel">ВАШЕ ЧИСЛО</div>
         <div class="result-sum" id="originalSum">Сумма: —</div>
-        <div class="interpretation" id="interpretation" style="display:none;"></div>
+        <div class="interpretation" id="interpretation"></div>
+        <div class="letters-info" id="lettersInfo"></div>
     </div>
     
-    <!-- Пошагово -->
-    <div style="font-size:13px; color:#4f667e; margin-bottom:2px;">📋 Пошаговый расчёт</div>
-    <div class="steps" id="stepsList">Введите текст и нажмите «Рассчитать»</div>
+    <div style="font-size:13px;color:#8b7355;margin-bottom:2px;">📋 Как я считал</div>
+    <div class="steps" id="stepsList">Напишите что-нибудь и нажмите «Заварить!» ☕</div>
     
-    <!-- Ошибка -->
     <div class="error" id="errorMessage"></div>
     
-    <!-- Инфо -->
     <div class="info-row">
-        <span class="badge" id="letterCount">Букв: 0</span>
+        <span class="badge" id="letterCount">Символов: 0</span>
         <span class="badge" id="reductionInfo">Свёрнуто: —</span>
+        <span class="badge">🫖 чайник-калькулятор</span>
     </div>
     
-    <!-- Таблица соответствий (обновляется при смене режима) -->
     <div class="table-ref" id="tableRef">
-        <strong>📖 Соответствие букв и чисел:</strong>
+        <strong>📖 Соответствие букв и чисел (мантры):</strong>
         <div id="tableContent"></div>
+        <div class="note">* Ь — гласная, Ъ — согласная</div>
+    </div>
+    
+    <div class="share-buttons" id="shareButtons" style="display:none;">
+        <button class="share-btn share-telegram" onclick="shareTelegram()">📱 Telegram</button>
+        <button class="share-btn share-whatsapp" onclick="shareWhatsApp()">💬 WhatsApp</button>
+        <button class="share-btn share-vk" onclick="shareVK()">🌐 ВКонтакте</button>
+        <button class="share-btn share-copy" onclick="copyLink()">📋 Копировать ссылку</button>
     </div>
     
     <div class="footer">
-        ⚡ Все числа сводятся к однозначному (1-9)
+        ☕ Всё просто: буквы → цифры, цифры → буквы, сумма → одно число (1-9)
     </div>
 </div>
 
 <script>
     // ============================================
-    // 1. СЛОВАРИ ДЛЯ РАЗНЫХ РЕЖИМОВ
+    // СЛОВАРИ
     // ============================================
     
     // Классический: а=1, б=2 ... я=33
@@ -403,18 +155,41 @@ html
     
     // Мантры: а,и,с,ъ=1; б,й,т,ы=2; и т.д.
     const MANTRA_MAP = {
-        'а': 1, 'и': 1, 'с': 1, 'ъ': 1,
-        'б': 2, 'й': 2, 'т': 2, 'ы': 2,
-        'в': 3, 'к': 3, 'у': 3, 'ь': 3,
-        'г': 4, 'л': 4, 'ф': 4, 'э': 4,
-        'д': 5, 'м': 5, 'х': 5, 'ю': 5,
-        'е': 6, 'н': 6, 'ц': 6, 'я': 6,
-        'ё': 7, 'о': 7, 'ч': 7,
-        'ж': 8, 'п': 8, 'ш': 8,
-        'з': 9, 'р': 9, 'щ': 9
+        'а':1,'и':1,'с':1,'ъ':1,
+        'б':2,'й':2,'т':2,'ы':2,
+        'в':3,'к':3,'у':3,'ь':3,
+        'г':4,'л':4,'ф':4,'э':4,
+        'д':5,'м':5,'х':5,'ю':5,
+        'е':6,'н':6,'ц':6,'я':6,
+        'ё':7,'о':7,'ч':7,
+        'ж':8,'п':8,'ш':8,
+        'з':9,'р':9,'щ':9
     };
     
-    // Таблицы для отображения
+    // ОБРАТНЫЙ словарь для перевода цифр в буквы (мантры)
+    const MANTRA_DECODE = {
+        '1': ['а', 'и', 'с', 'ъ'],
+        '2': ['б', 'й', 'т', 'ы'],
+        '3': ['в', 'к', 'у', 'ь'],
+        '4': ['г', 'л', 'ф', 'э'],
+        '5': ['д', 'м', 'х', 'ю'],
+        '6': ['е', 'н', 'ц', 'я'],
+        '7': ['ё', 'о', 'ч'],
+        '8': ['ж', 'п', 'ш'],
+        '9': ['з', 'р', 'щ'],
+        '0': ['0']
+    };
+    
+    // ============================================
+    // ГЛАСНЫЕ И СОГЛАСНЫЕ (по ведической системе)
+    // ============================================
+    // Гласные: а, и, у, э, о, ы, е, ё, ю, я + ь (мягкий знак)
+    const VOWELS = ['а', 'и', 'у', 'э', 'о', 'ы', 'е', 'ё', 'ю', 'я', 'ь'];
+    
+    // Согласные: все остальные буквы + ъ (твёрдый знак)
+    // Согласные определяются как буквы, которые не входят в VOWELS
+    // но только если они есть в MANTRA_MAP
+    
     const TABLES = {
         classic: [
             'а-1, б-2, в-3, г-4, д-5, е-6, ё-7, ж-8, з-9',
@@ -435,27 +210,25 @@ html
         ]
     };
     
-    // Интерпретация чисел
     const INTERPRETATIONS = {
-        1: '🌟 Единство, начало, лидерство, независимость',
-        2: '🤝 Гармония, партнёрство, дипломатичность, баланс',
-        3: '🎨 Творчество, общение, радость, самовыражение',
-        4: '🏛️ Стабильность, порядок, труд, дисциплина',
-        5: '🦋 Свобода, перемены, приключения, адаптивность',
-        6: '💖 Любовь, ответственность, семья, забота',
-        7: '🔮 Мудрость, духовность, анализ, интуиция',
-        8: '⚡ Успех, власть, трансформация, изобилие',
-        9: '🌍 Завершение, гуманизм, мудрость, альтруизм'
+        1:'🌟 Единство, начало, лидерство',
+        2:'🤝 Гармония, партнёрство, баланс',
+        3:'🎨 Творчество, общение, радость',
+        4:'🏛️ Стабильность, порядок, труд',
+        5:'🦋 Свобода, перемены, приключения',
+        6:'💖 Любовь, ответственность, семья',
+        7:'🔮 Мудрость, духовность, интуиция',
+        8:'⚡ Успех, власть, трансформация',
+        9:'🌍 Завершение, гуманизм, мудрость'
     };
     
     // ============================================
-    // 2. СОСТОЯНИЕ
+    // СОСТОЯНИЕ
     // ============================================
-    
-    let currentMode = 'classic'; // 'classic' или 'mantra'
+    let currentMode = 'mantra';
     
     // ============================================
-    // 3. ФУНКЦИИ
+    // ФУНКЦИИ
     // ============================================
     
     function getMap() {
@@ -468,43 +241,57 @@ html
     
     function setMode(mode) {
         currentMode = mode;
-        
-        // Обновляем активную кнопку
         document.querySelectorAll('.mode-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.mode === mode);
         });
-        
-        // Обновляем таблицу
         updateTable();
-        
-        // Пересчитываем, если есть текст
         const input = document.getElementById('inputText').value;
-        if (input.trim()) {
-            calculate();
-        }
+        if (input.trim()) calculate();
     }
     
     function updateTable() {
         const container = document.getElementById('tableContent');
-        const rows = TABLES[currentMode];
-        container.innerHTML = rows.map(row => `<div>${row}</div>`).join('');
+        container.innerHTML = TABLES[currentMode].map(row => `<div>${row}</div>`).join('');
     }
     
     function reduceToSingleDigit(num) {
         if (num === 0) return { final: 0, steps: [0] };
-        
         let result = num;
         const steps = [num];
-        
         while (result > 9) {
-            const digits = String(result).split('').map(Number);
-            const sum = digits.reduce((a, b) => a + b, 0);
+            const sum = String(result).split('').map(Number).reduce((a,b) => a + b, 0);
             steps.push(sum);
             result = sum;
         }
-        
         return { final: result, steps };
     }
+    
+    // ============================================
+    // ДЕКОДИНГ КОДА → БУКВЫ (мантры)
+    // ============================================
+    
+    function decodeCodeToLetters(code) {
+        const digits = String(code).replace(/\s/g, '').split('');
+        let result = '';
+        let position = 0;
+        
+        for (let d of digits) {
+            if (d === '0') {
+                result += '0';
+                position++;
+                continue;
+            }
+            const letters = MANTRA_DECODE[d] || ['?'];
+            const letter = letters[position % letters.length];
+            result += letter;
+            position++;
+        }
+        return result;
+    }
+    
+    // ============================================
+    // ОСНОВНОЙ РАСЧЁТ
+    // ============================================
     
     function calculate() {
         const input = document.getElementById('inputText').value;
@@ -516,20 +303,20 @@ html
         const reductionInfoEl = document.getElementById('reductionInfo');
         const interpretationEl = document.getElementById('interpretation');
         const resultLabel = document.getElementById('resultLabel');
+        const lettersInfoEl = document.getElementById('lettersInfo');
         
-        // Скрываем ошибку
         errorEl.classList.remove('show');
         errorEl.textContent = '';
         interpretationEl.style.display = 'none';
+        lettersInfoEl.style.display = 'none';
         
-        // Если пусто
         if (!input.trim()) {
             resultNumberEl.innerHTML = `<span class="secondary">—</span>`;
             originalSumEl.textContent = 'Сумма: —';
-            stepsList.innerHTML = 'Введите текст и нажмите «Рассчитать»';
-            letterCountEl.textContent = 'Букв: 0';
+            stepsList.innerHTML = 'Напишите что-нибудь и нажмите «Заварить!» ☕';
+            letterCountEl.textContent = 'Символов: 0';
             reductionInfoEl.textContent = 'Свёрнуто: —';
-            resultLabel.textContent = 'ИТОГОВОЕ ЧИСЛО';
+            resultLabel.textContent = 'ВАШЕ ЧИСЛО';
             return;
         }
         
@@ -538,38 +325,99 @@ html
         const details = [];
         let validCount = 0;
         let unknownChars = [];
+        let digitCount = 0;
+        let letterCount = 0;
+        let vowelsFound = [];
+        let consonantsFound = [];
+        let softSigns = []; // ь
+        let hardSigns = []; // ъ
+        let decodedText = '';
+        let isDecoded = false;
         
-        // Проходим по символам
-        for (let i = 0; i < input.length; i++) {
-            const char = input[i];
+        // Проверяем: если ввод — только цифры, декодируем в буквы
+        const isOnlyDigits = /^[0-9\s]+$/.test(input.trim());
+        let textToProcess = input;
+        
+        if (isOnlyDigits && currentMode === 'mantra') {
+            const cleanDigits = input.replace(/\s/g, '');
+            decodedText = decodeCodeToLetters(cleanDigits);
+            textToProcess = decodedText;
+            isDecoded = true;
+            details.push(`<span class="section-title">🔀 Декодирование: ${input} → ${decodedText}</span>`);
+        }
+        
+        // Обрабатываем каждый символ
+        for (let i = 0; i < textToProcess.length; i++) {
+            const char = textToProcess[i];
             
+            // Пропускаем пробелы
             if (char === ' ') {
-                details.push(`<span class="tag" style="color:#999;">пробел</span>`);
+                details.push(`<span class="tag" style="color:#bba28c;">пробел</span>`);
                 continue;
             }
             
+            // Проверяем: это цифра?
+            if (char >= '0' && char <= '9') {
+                const digit = parseInt(char);
+                total += digit;
+                validCount++;
+                digitCount++;
+                details.push(`<span class="tag digit-tag">'${char}' → ${digit}</span>`);
+                continue;
+            }
+            
+            // Проверяем: это буква из нашего алфавита?
             const lower = char.toLowerCase();
             const value = map[lower];
-            
-            if (value === undefined) {
-                unknownChars.push(char);
-                details.push(`<span class="tag" style="background:#ffe3e3;border-color:#f5a0a0;">'${char}' (пропуск)</span>`);
-            } else {
+            if (value !== undefined) {
                 total += value;
                 validCount++;
-                details.push(`<span class="tag">'${char}' → ${value}</span>`);
+                letterCount++;
+                
+                // ============================================
+                // ОПРЕДЕЛЯЕМ ТИП БУКВЫ
+                // ============================================
+                // 1. Это гласная? (включая ь)
+                const isVowel = VOWELS.includes(lower);
+                
+                // 2. Это мягкий знак (ь) — всегда гласная
+                if (lower === 'ь') {
+                    vowelsFound.push(char);
+                    softSigns.push(char);
+                    details.push(`<span class="tag vowel-tag">'${char}' → ${value} (гласная, мягкий знак)</span>`);
+                }
+                // 3. Это твёрдый знак (ъ) — всегда согласная
+                else if (lower === 'ъ') {
+                    consonantsFound.push(char);
+                    hardSigns.push(char);
+                    details.push(`<span class="tag consonant-tag">'${char}' → ${value} (согласная, твёрдый знак)</span>`);
+                }
+                // 4. Обычная гласная
+                else if (isVowel) {
+                    vowelsFound.push(char);
+                    details.push(`<span class="tag vowel-tag">'${char}' → ${value} (гласная)</span>`);
+                }
+                // 5. Обычная согласная
+                else {
+                    consonantsFound.push(char);
+                    details.push(`<span class="tag consonant-tag">'${char}' → ${value} (согласная)</span>`);
+                }
+                continue;
             }
+            
+            // Всё остальное - пропускаем
+            unknownChars.push(char);
+            details.push(`<span class="tag" style="background:#fde8e0;border-color:#e8b8a8;">'${char}' (пропуск)</span>`);
         }
         
-        // Если нет валидных букв
+        // Если нет валидных символов
         if (validCount === 0) {
             resultNumberEl.innerHTML = `<span class="secondary">0</span>`;
             originalSumEl.textContent = 'Сумма: 0';
-            stepsList.innerHTML = '❌ Нет букв для расчёта';
-            letterCountEl.textContent = 'Букв: 0';
+            stepsList.innerHTML = '❌ Нет букв или цифр для расчёта';
+            letterCountEl.textContent = 'Символов: 0';
             reductionInfoEl.textContent = 'Свёрнуто: —';
-            resultLabel.textContent = 'ИТОГОВОЕ ЧИСЛО';
-            
+            resultLabel.textContent = 'ВАШЕ ЧИСЛО';
             if (unknownChars.length > 0) {
                 errorEl.textContent = `⚠️ Неизвестные символы: ${unknownChars.join(', ')} (пропущены)`;
                 errorEl.classList.add('show');
@@ -577,58 +425,164 @@ html
             return;
         }
         
-        // Сворачиваем
         const reduction = reduceToSingleDigit(total);
         const finalNumber = reduction.final;
         
-        // Показываем результат
         resultNumberEl.innerHTML = `${finalNumber}`;
         resultLabel.textContent = `ЧИСЛО ${getModeName()}`;
         originalSumEl.textContent = `Сумма: ${total}`;
         
-        // Интерпретация
         if (finalNumber >= 1 && finalNumber <= 9) {
             interpretationEl.textContent = INTERPRETATIONS[finalNumber] || '';
             interpretationEl.style.display = 'block';
         }
         
-        // Пошагово
-        let stepsHtml = details.join(' ');
+        // ============================================
+        // ИНФОРМАЦИЯ О ГЛАСНЫХ И СОГЛАСНЫХ
+        // ============================================
+        if (vowelsFound.length > 0 || consonantsFound.length > 0) {
+            let infoHtml = '';
+            
+            // Гласные (включая ь)
+            if (vowelsFound.length > 0) {
+                const uniqueVowels = [...new Set(vowelsFound.map(c => c.toLowerCase()))];
+                const softCount = softSigns.length;
+                const regularVowels = vowelsFound.filter(c => c.toLowerCase() !== 'ь');
+                const uniqueRegular = [...new Set(regularVowels.map(c => c.toLowerCase()))];
+                
+                let vowelDisplay = vowelsFound.join(', ');
+                let extraInfo = `всего: ${vowelsFound.length}`;
+                if (softCount > 0) {
+                    extraInfo += `, из них ь: ${softCount}`;
+                }
+                if (uniqueVowels.length > 0) {
+                    extraInfo += `, уникальных: ${uniqueVowels.length}`;
+                }
+                
+                infoHtml += `
+                    <div style="margin-bottom:6px;">
+                        <span class="label">🔊 Гласные${softCount > 0 ? ' (включая ь)' : ''}:</span>
+                        <span class="vowel">${vowelDisplay}</span>
+                        <span class="sub">(${extraInfo})</span>
+                    </div>
+                `;
+            }
+            
+            // Согласные (включая ъ)
+            if (consonantsFound.length > 0) {
+                const uniqueConsonants = [...new Set(consonantsFound.map(c => c.toLowerCase()))];
+                const hardCount = hardSigns.length;
+                
+                let consonantDisplay = consonantsFound.join(', ');
+                let extraInfo = `всего: ${consonantsFound.length}`;
+                if (hardCount > 0) {
+                    extraInfo += `, из них ъ: ${hardCount}`;
+                }
+                if (uniqueConsonants.length > 0) {
+                    extraInfo += `, уникальных: ${uniqueConsonants.length}`;
+                }
+                
+                infoHtml += `
+                    <div style="margin-bottom:6px;">
+                        <span class="label">🔇 Согласные${hardCount > 0 ? ' (включая ъ)' : ''}:</span>
+                        <span class="consonant">${consonantDisplay}</span>
+                        <span class="sub">(${extraInfo})</span>
+                    </div>
+                `;
+            }
+            
+            // Отдельно информация о ь и ъ
+            if (softSigns.length > 0 || hardSigns.length > 0) {
+                let signsHtml = '';
+                if (softSigns.length > 0) {
+                    signsHtml += `ь: ${softSigns.length}`;
+                }
+                if (hardSigns.length > 0) {
+                    if (signsHtml) signsHtml += ', ';
+                    signsHtml += `ъ: ${hardSigns.length}`;
+                }
+                infoHtml += `
+                    <div style="margin-top:4px;padding-top:4px;border-top:1px dashed #e8dccc;color:#8b7355;font-size:13px;">
+                        📌 Знаки: ${signsHtml} (ь — гласная, ъ — согласная)
+                    </div>
+                `;
+            }
+            
+            // Общая статистика букв
+            const totalLetters = vowelsFound.length + consonantsFound.length;
+            infoHtml += `
+                <div style="margin-top:4px;padding-top:4px;border-top:1px dashed #e8dccc;color:#8b7355;font-size:13px;">
+                    Всего букв: ${totalLetters} (гласных: ${vowelsFound.length}, согласных: ${consonantsFound.length})
+                </div>
+            `;
+            
+            lettersInfoEl.innerHTML = infoHtml;
+            lettersInfoEl.style.display = 'block';
+        }
         
-        // Процесс сворачивания
+        // Пошаговый вывод
+        let stepsHtml = details.join(' ');
         if (reduction.steps.length > 1) {
-            const arrowSteps = reduction.steps.join(' → ');
-            stepsHtml += ` &nbsp;|→&nbsp; <span class="tag highlight">${arrowSteps}</span>`;
+            stepsHtml += ` &nbsp;|→&nbsp; <span class="tag highlight">${reduction.steps.join(' → ')}</span>`;
         } else {
             stepsHtml += ` &nbsp;|→&nbsp; <span class="tag highlight">${total} (уже однозначное)</span>`;
         }
-        
         stepsHtml += ` &nbsp;➜ <span class="tag final-tag">${finalNumber}</span>`;
         stepsList.innerHTML = stepsHtml;
         
-        // Доп. информация
-        letterCountEl.textContent = `Букв: ${validCount}`;
+        // Статистика
+        let stats = [];
+        if (letterCount > 0) stats.push(`букв: ${letterCount}`);
+        if (digitCount > 0) stats.push(`цифр: ${digitCount}`);
+        if (isDecoded) stats.push(`декодировано: ${decodedText}`);
+        letterCountEl.textContent = `Символов: ${validCount} (${stats.join(', ')})`;
+        
         const stepsStr = reduction.steps.length > 1 ? reduction.steps.join('→') : `${total} (1 шаг)`;
         reductionInfoEl.textContent = `Свёрнуто: ${total} → ${stepsStr} → ${finalNumber}`;
         
-        // Ошибка если есть неизвестные
         if (unknownChars.length > 0) {
             const show = unknownChars.slice(0, 10).join(', ');
             const more = unknownChars.length > 10 ? ` и ещё ${unknownChars.length - 10}` : '';
             errorEl.textContent = `⚠️ Пропущены: ${show}${more} (неизвестные символы)`;
             errorEl.classList.add('show');
         }
+        
+        const isLocal = window.location.protocol === 'file:';
+        if (!isLocal) {
+            document.getElementById('shareButtons').style.display = 'flex';
+        }
+    }
+    
+    // ============================================
+    // ДЕКОДИРОВАТЬ КОД
+    // ============================================
+    
+    function decodeCode() {
+        const input = document.getElementById('inputText').value;
+        const cleanInput = input.replace(/\s/g, '');
+        
+        if (!/^[0-9]+$/.test(cleanInput)) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = '⚠️ Введите только цифры для декодирования!';
+            errorEl.classList.add('show');
+            return;
+        }
+        
+        const decoded = decodeCodeToLetters(cleanInput);
+        document.getElementById('inputText').value = decoded;
+        calculate();
     }
     
     function clearAll() {
         document.getElementById('inputText').value = '';
         document.getElementById('resultNumber').innerHTML = `<span class="secondary">—</span>`;
-        document.getElementById('stepsList').innerHTML = 'Введите текст и нажмите «Рассчитать»';
+        document.getElementById('stepsList').innerHTML = 'Напишите что-нибудь и нажмите «Заварить!» ☕';
         document.getElementById('originalSum').textContent = 'Сумма: —';
-        document.getElementById('letterCount').textContent = 'Букв: 0';
+        document.getElementById('letterCount').textContent = 'Символов: 0';
         document.getElementById('reductionInfo').textContent = 'Свёрнуто: —';
-        document.getElementById('resultLabel').textContent = 'ИТОГОВОЕ ЧИСЛО';
+        document.getElementById('resultLabel').textContent = 'ВАШЕ ЧИСЛО';
         document.getElementById('interpretation').style.display = 'none';
+        document.getElementById('lettersInfo').style.display = 'none';
         const errorEl = document.getElementById('errorMessage');
         errorEl.classList.remove('show');
         errorEl.textContent = '';
@@ -636,35 +590,79 @@ html
     
     function loadExample() {
         const examples = {
-            classic: ['привет мир', 'абвгдеёжз', 'яблоко', 'нумерология'],
-            mantra: ['ом намаха шивая', 'ом мани падме хум', 'гаятри мантра', 'харе кришна']
+            classic: ['привет мир', 'абвгдеёжз', 'яблоко', 'нумерология', 'счастье', '3691408358'],
+            mantra: ['3691408358', 'ом намаха шивая', 'ом мани падме хум', 'гаятри мантра', 'харе кришна', '108']
         };
-        
-        const examplesList = examples[currentMode] || examples.classic;
-        const randomExample = examplesList[Math.floor(Math.random() * examplesList.length)];
-        document.getElementById('inputText').value = randomExample;
+        const list = examples[currentMode] || examples.mantra;
+        document.getElementById('inputText').value = list[Math.floor(Math.random() * list.length)];
         calculate();
     }
     
     // ============================================
-    // 4. ЗАПУСК
+    // ШЕРИНГ
     // ============================================
     
-    // При загрузке
+    function getShareUrl() {
+        if (window.location.protocol !== 'file:') {
+            return window.location.href;
+        }
+        return 'https://ваш-сайт.com/chaynik-calculator.html';
+    }
+    
+    function shareTelegram() {
+        const url = getShareUrl();
+        const text = encodeURIComponent('🫖 Чайник-калькулятор — перевожу код в буквы и обратно!');
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${text}`, '_blank');
+    }
+    
+    function shareWhatsApp() {
+        const url = getShareUrl();
+        const text = encodeURIComponent('🫖 Чайник-калькулятор — узнайте своё число!');
+        window.open(`https://api.whatsapp.com/send?text=${text}%20${encodeURIComponent(url)}`, '_blank');
+    }
+    
+    function shareVK() {
+        const url = getShareUrl();
+        window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=🫖 Чайник-калькулятор`, '_blank');
+    }
+    
+    function copyLink() {
+        const url = getShareUrl();
+        navigator.clipboard.writeText(url).then(() => {
+            alert('✅ Ссылка скопирована! Можно отправлять друзьям 🫖');
+        }).catch(() => {
+            const input = document.createElement('input');
+            input.value = url;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            alert('✅ Ссылка скопирована! Можно отправлять друзьям 🫖');
+        });
+    }
+    
+    // ============================================
+    // ЗАПУСК
+    // ============================================
+    
     window.onload = function() {
+        currentMode = 'mantra';
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === 'mantra');
+        });
         updateTable();
-        // Авторасчёт примера
-        setTimeout(calculate, 100);
+        setTimeout(calculate, 150);
+        if (window.location.protocol !== 'file:') {
+            document.getElementById('shareButtons').style.display = 'flex';
+        }
     };
     
-    // Авторасчёт при вводе (с задержкой)
     let timer;
     document.getElementById('inputText').addEventListener('input', function() {
         clearTimeout(timer);
         timer = setTimeout(calculate, 600);
     });
     
-    // Enter для быстрого расчёта
     document.getElementById('inputText').addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -672,6 +670,5 @@ html
         }
     });
 </script>
-
 </body>
 </html>
