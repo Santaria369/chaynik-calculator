@@ -110,7 +110,7 @@
     </div>
     
     <div class="input-row">
-        <textarea id="inputText" placeholder="Введите код, слово или фразу...&#10;Например: 369108358 или ирина ивановна ерёменко">ирина ивановна ерёменко</textarea>
+        <textarea id="inputText" placeholder="Введите код, слово или фразу...&#10;Например: 369108358 или ирина ивановна ерёменко">хочу денег</textarea>
         <div class="btn-group">
             <button class="btn-calc" onclick="calculate()">🧮 Заварить!</button>
             <button class="btn-decode" onclick="decodeCode()">🔀 Код → звуки</button>
@@ -366,8 +366,8 @@
             display: currentDigits.join(' ')
         });
         
-        // Сворачиваем попарно, пока не получим 3 цифры
-        while (currentDigits.length > 3) {
+        // Сворачиваем попарно, пока не получим 9 цифр или меньше
+        while (currentDigits.length > 9) {
             let nextDigits = [];
             let pairs = [];
             
@@ -393,17 +393,35 @@
             currentDigits = nextDigits;
         }
         
-        // Теперь у нас 3 цифры (или меньше)
-        // Добавляем 369
+        // Теперь у нас 9 цифр или меньше
+        // Если меньше 9 — добавляем 369 до 9 цифр
         let finalDigits = currentDigits.slice();
-        finalDigits.push(3, 6, 9);
+        let added369 = false;
         
-        allSteps.push({
-            label: 'Добавляем 369',
-            digits: finalDigits.slice(),
-            display: finalDigits.join(' '),
-            note: '➕ Добавлены 3, 6, 9'
-        });
+        if (finalDigits.length < 9) {
+            while (finalDigits.length < 9) {
+                if (finalDigits.length < 9) finalDigits.push(3);
+                if (finalDigits.length < 9) finalDigits.push(6);
+                if (finalDigits.length < 9) finalDigits.push(9);
+            }
+            added369 = true;
+        }
+        
+        if (added369) {
+            allSteps.push({
+                label: 'Добавляем 369',
+                digits: finalDigits.slice(),
+                display: finalDigits.join(' '),
+                note: '➕ Добавлены 3, 6, 9'
+            });
+        } else {
+            allSteps.push({
+                label: 'Финальный код',
+                digits: finalDigits.slice(),
+                display: finalDigits.join(' '),
+                note: '✅ 9 цифр — код готов'
+            });
+        }
         
         let nineCode = finalDigits.join('');
         
