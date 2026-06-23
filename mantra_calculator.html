@@ -16,7 +16,7 @@
             display:flex;
             justify-content:center;
             align-items:flex-start;
-            background: #fcf6f0; /* fallback */
+            background: #fcf6f0;
             position:relative;
         }
 
@@ -30,11 +30,8 @@
             height: 100%;
             z-index: 0;
             background-image: 
-                /* слой 1: большие полупрозрачные цветы */
                 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.15"><path fill="%23ff69b4" d="M100 20 Q120 50 150 50 Q120 70 140 100 Q110 90 100 120 Q90 90 60 100 Q80 70 50 50 Q80 50 100 20z"/><path fill="%23ff1493" d="M100 40 Q115 60 135 60 Q115 75 125 90 Q105 85 100 105 Q95 85 75 90 Q85 75 65 60 Q85 60 100 40z" opacity="0.5"/><circle cx="100" cy="70" r="12" fill="%23ff69b4" opacity="0.3"/></svg>') 0 0 / 200px 200px repeat,
-                /* слой 2: мелкие цветы-розетки */
                 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" opacity="0.12"><circle cx="60" cy="60" r="30" fill="%23ff1493" /><circle cx="60" cy="60" r="18" fill="%23ff69b4" /><circle cx="60" cy="60" r="8" fill="%23ffb6c1" /><path d="M60 10 L70 40 L100 30 L80 55 L105 75 L75 75 L60 100 L45 75 L15 75 L40 55 L20 30 L50 40 L60 10z" fill="%23ff69b4" opacity="0.6"/></svg>') 100px 100px / 120px 120px repeat,
-                /* слой 3: надпись Сантария (много раз) */
                 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" opacity="0.08"><text x="50%25" y="60%25" font-family="Georgia,serif" font-size="36" fill="%23ff1493" text-anchor="middle" font-weight="bold" letter-spacing="6">✦ Сантария ✦</text></svg>') 0 0 / 400px 80px repeat;
             pointer-events: none;
         }
@@ -87,8 +84,14 @@
         .table-ref strong{color:#5a3e2b}
         .table-ref .num{color:#b8863a;font-weight:700}
         .table-ref .note{color:#a0806a;font-size:12px;font-style:italic}
+        
         .footer{margin-top:20px;text-align:center;font-size:13px;color:#a0806a;border-top:1px solid #e8dccc;padding-top:16px}
-        .footer span{color:#d4749e;font-weight:600;letter-spacing:1px}
+        .footer .brand{color:#d4749e;font-weight:600;letter-spacing:1px;font-size:15px}
+        .footer .social-links{display:flex;justify-content:center;gap:16px;margin:6px 0 4px;flex-wrap:wrap}
+        .footer .social-links a{color:#8b7355;text-decoration:none;transition:0.2s;display:inline-flex;align-items:center;gap:4px;font-size:14px}
+        .footer .social-links a:hover{color:#b8863a;transform:scale(1.05)}
+        .footer .social-links .icon{font-size:18px}
+        
         .share-buttons{margin:12px 0 6px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
         .share-btn{padding:8px 18px;border-radius:30px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:.2s;color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
         .share-btn:hover{transform:scale(1.05);opacity:0.9}
@@ -201,9 +204,21 @@
     </div>
     
     <div class="footer">
-        ☕ Всё просто: код → звуки → 9-значный код → цифра (1-9)
-        <br>
-        <span>✦ Сантария ✦</span>
+        <div class="social-links">
+            <a href="https://t.me/santaria_369" target="_blank" title="Telegram">
+                <span class="icon">📱</span> Telegram
+            </a>
+            <a href="https://vk.com/santaria369" target="_blank" title="ВКонтакте">
+                <span class="icon">🌐</span> ВКонтакте
+            </a>
+            <a href="https://max.ru/u/f9LHodD0cOL80qj158wWUdXqYH20jvlAT12hozq13bM-6PB6FMSsQWhB2AA" target="_blank" title="MAX">
+                <span class="icon">💬</span> MAX
+            </a>
+        </div>
+        <div class="brand">✦ Сантария ✦</div>
+        <div style="margin-top:6px;font-size:12px;color:#bba28c;">
+            ☕ Всё просто: код → звуки → 9-значный код → цифра (1-9)
+        </div>
     </div>
 </div>
 
