@@ -140,17 +140,18 @@
         'з':9,'р':9,'щ':9
     };
     
-    const MANTRA_DECODE = {
-        '1': ['а', 'и', 'с', 'ъ'],
-        '2': ['б', 'й', 'т', 'ы'],
-        '3': ['в', 'к', 'у', 'ь'],
-        '4': ['г', 'л', 'ф', 'э'],
-        '5': ['д', 'м', 'х', 'ю'],
-        '6': ['е', 'н', 'ц', 'я'],
-        '7': ['ё', 'о', 'ч'],
-        '8': ['ж', 'п', 'ш'],
-        '9': ['з', 'р', 'щ'],
-        '0': ['0']
+    // Для декодирования: цифра → все буквы, которые ей соответствуют
+    const MANTRA_DECODE_ALL = {
+        '1': 'аисъ',
+        '2': 'бйты',
+        '3': 'вкуь',
+        '4': 'глфэ',
+        '5': 'дмхю',
+        '6': 'енця',
+        '7': 'ёоч',
+        '8': 'жпш',
+        '9': 'зрщ',
+        '0': ''
     };
     
     const VOWELS = ['а', 'и', 'у', 'э', 'о', 'ы', 'е', 'ё', 'ю', 'я', 'ь'];
@@ -204,15 +205,16 @@
         return { final: result, steps };
     }
     
+    // ============================================
+    // ДЕКОДИРОВАНИЕ: цифра → ВСЕ буквы
+    // ============================================
+    
     function decodeCodeToLetters(code) {
         const digits = String(code).replace(/\s/g, '').split('');
         let result = '';
-        let position = 0;
         for (let d of digits) {
-            if (d === '0') { position++; continue; }
-            const letters = MANTRA_DECODE[d] || ['?'];
-            result += letters[position % letters.length];
-            position++;
+            if (d === '0') continue;
+            result += MANTRA_DECODE_ALL[d] || '';
         }
         return result;
     }
@@ -220,16 +222,13 @@
     function getDecodeSteps(code) {
         const digits = String(code).replace(/\s/g, '').split('');
         let steps = [];
-        let position = 0;
         for (let d of digits) {
             if (d === '0') {
                 steps.push({digit: d, letters: '0 (пропуск)'});
-                position++;
                 continue;
             }
-            const letters = MANTRA_DECODE[d] || ['?'];
-            steps.push({digit: d, letters: letters[position % letters.length]});
-            position++;
+            const letters = MANTRA_DECODE_ALL[d] || '?';
+            steps.push({digit: d, letters: letters});
         }
         return steps;
     }
@@ -262,7 +261,7 @@
         let decodeSteps = [];
         let isDecoded = false;
         
-        // Если только цифры — декодируем
+        // Если только цифры — декодируем (ВСЕ буквы для каждой цифры)
         if (isOnlyDigits) {
             decodeSteps = getDecodeSteps(cleanInput);
             decodedText = decodeCodeToLetters(cleanInput);
@@ -270,7 +269,7 @@
             isDecoded = true;
         }
         
-        // ===== ОБЩИЙ РАСЧЁТ (и для кода, и для мантры) =====
+        // ===== ОБЩИЙ РАСЧЁТ =====
         const map = getMap();
         let total = 0;
         let validCount = 0;
@@ -279,7 +278,6 @@
         let letterCount = 0;
         let vowelsFound = [];
         let consonantsFound = [];
-        let sumDetails = [];
         let sumString = '';
         
         for (let i = 0; i < textToProcess.length; i++) {
@@ -337,7 +335,7 @@
         }
         sumDisplay += ' = ' + finalNumber;
         
-        // ===== БЛОК ДЕКОДИРОВАНИЯ (если был код) =====
+        // ===== БЛОК ДЕКОДИРОВАНИЯ =====
         let decodeHtml = '';
         if (isDecoded && isOnlyDigits) {
             let stepsHtml = '';
@@ -373,12 +371,8 @@
             lettersHtml = `<div class="letters-info" style="display:block;">${infoHtml}</div>`;
         }
         
-        // ===== ДВЕ КАРТОЧКИ РЕЗУЛЬТАТОВ =====
-        let codeTotal = 0;
-        let codeSumString = '';
-        let codeReduction = null;
-        
-        // Для кода считаем только цифры из исходного ввода
+        // ===== РАСЧЁТ КОДА (только для цифр) =====
+        let codeCardHtml = '';
         if (isOnlyDigits) {
             const digits = cleanInput.split('');
             let codeSum = 0;
@@ -389,29 +383,24 @@
                 if (codeStr) codeStr += '+';
                 codeStr += num;
             }
-            codeTotal = codeSum;
-            codeReduction = reduceToSingleDigit(codeSum);
-            codeSumString = codeStr + ' = ' + codeSum;
+            const codeReduction = reduceToSingleDigit(codeSum);
+            let codeSumDisplay = codeStr + ' = ' + codeSum;
             if (codeReduction.steps.length > 1) {
-                codeSumString += ' → ' + codeReduction.steps.join(' → ');
+                codeSumDisplay += ' → ' + codeReduction.steps.join(' → ');
             }
-            codeSumString += ' = ' + codeReduction.final;
-        }
-        
-        // Карточка 1: Расчёт кода (только если был код)
-        let codeCardHtml = '';
-        if (isOnlyDigits && codeReduction) {
+            codeSumDisplay += ' = ' + codeReduction.final;
+            
             codeCardHtml = `
                 <div class="result-card code">
                     <div class="card-title">📊 Расчёт кода</div>
                     <div class="card-number">${codeReduction.final}</div>
-                    <div class="card-sum">${codeSumString}</div>
+                    <div class="card-sum">${codeSumDisplay}</div>
                     <div class="card-interp">${INTERPRETATIONS[codeReduction.final] || ''}</div>
                 </div>
             `;
         }
         
-        // Карточка 2: Мантра
+        // ===== КАРТОЧКА МАНТРЫ =====
         const mantraCardHtml = `
             <div class="result-card mantra">
                 <div class="card-title">🔮 Мантра</div>
@@ -424,7 +413,7 @@
         
         // Собираем всё вместе
         let gridHtml = '';
-        if (isOnlyDigits && codeReduction) {
+        if (isOnlyDigits) {
             gridHtml = `<div class="results-grid">${codeCardHtml}${mantraCardHtml}</div>`;
         } else {
             gridHtml = `<div class="results-grid" style="grid-template-columns:1fr;">${mantraCardHtml}</div>`;
