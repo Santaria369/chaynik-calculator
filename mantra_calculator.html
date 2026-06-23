@@ -329,14 +329,14 @@
     }
     
     // ============================================
-    // РАСЧЁТ 9-ЗНАЧНОГО КОДА (ИСПРАВЛЕННЫЙ)
+    // РАСЧЁТ 9-ЗНАЧНОГО КОДА (С УЧЁТОМ 0)
     // ============================================
     
     function calculateNineCode(text) {
         const clean = text.toLowerCase().replace(/\s/g, '');
         if (!clean) return null;
         
-        // Переводим буквы в цифры
+        // Переводим буквы в цифры (0 пропускаем!)
         let digits = '';
         let vowels = [];
         let consonants = [];
@@ -344,6 +344,8 @@
         for (let char of clean) {
             const val = MANTRA_MAP[char];
             if (val !== undefined) {
+                // 0 пропускаем!
+                if (val === 0) continue;
                 digits += val;
                 if (VOWELS.includes(char)) {
                     vowels.push(char);
