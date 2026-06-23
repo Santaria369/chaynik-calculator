@@ -8,7 +8,7 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#fdf6ed,#f0e6d8);min-height:100vh;padding:20px;display:flex;justify-content:center;align-items:flex-start}
-        .container{max-width:900px;width:100%;background:#fffdf9;border-radius:32px;padding:32px;box-shadow:0 20px 60px rgba(120,80,40,0.15);margin-top:20px;border:1px solid #f0e4d4}
+        .container{max-width:950px;width:100%;background:#fffdf9;border-radius:32px;padding:32px;box-shadow:0 20px 60px rgba(120,80,40,0.15);margin-top:20px;border:1px solid #f0e4d4}
         .header{display:flex;align-items:center;gap:14px;margin-bottom:4px}
         .header .kettle{font-size:44px;line-height:1}
         .header h1{font-size:30px;color:#5a3e2b;font-weight:800;letter-spacing:-0.5px}
@@ -52,7 +52,7 @@
 
         /* ===== БЛОКИ РЕЗУЛЬТАТОВ ===== */
         .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
-        @media(max-width:650px){.results-grid{grid-template-columns:1fr}}
+        @media(max-width:700px){.results-grid{grid-template-columns:1fr}}
         
         .result-card{background:#fcf6ee;border-radius:20px;padding:18px 20px;border:1px solid #e8dccc;overflow:hidden}
         .result-card .card-title{font-size:13px;color:#8b7355;letter-spacing:0.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
@@ -63,13 +63,20 @@
         .result-card.mantra .card-title{color:#8b7355}
         .result-card.mantra .card-number{color:#5a3e2b}
         .result-card.mantra .sound-row{font-size:18px;font-weight:700;color:#b8863a;word-break:break-all;margin:6px 0 4px;padding:10px 14px;background:#fffcf8;border-radius:10px;border:1px solid #e8dccc;line-height:1.6}
-        .result-card.mantra .sound-label{font-size:12px;color:#a0806a}
         .result-card.mantra .digit-row{font-size:14px;font-family:'Courier New',monospace;color:#5a3e2b;word-break:break-all;margin:4px 0;padding:6px 12px;background:#f8f4ee;border-radius:8px;border:1px dashed #e0d0c0}
         
         .result-card.code{border-color:#6b8a6b;background:#f6faf6}
         .result-card.code .card-title{color:#5a7a5a}
         .result-card.code .card-number{color:#2a5a2a}
         .result-card.code .code-display{font-size:22px;font-weight:700;color:#2a5a2a;word-break:break-all;margin:4px 0;padding:8px 14px;background:#eef5ee;border-radius:10px;border:1px solid #c8dcc8;font-family:'Courier New',monospace;letter-spacing:1px}
+
+        /* ===== 9-ЗНАЧНЫЙ КОД ===== */
+        .result-card.ninecode{border-color:#8a6a8a;background:#f6eef6}
+        .result-card.ninecode .card-title{color:#6a4a6a}
+        .result-card.ninecode .card-number{color:#4a2a4a}
+        .result-card.ninecode .code-steps{font-size:13px;font-family:'Courier New',monospace;color:#5a3e5a;word-break:break-all;margin:4px 0;padding:6px 12px;background:#f4eef4;border-radius:8px;border:1px dashed #d0c0d0;line-height:1.8}
+        .result-card.ninecode .code-steps .highlight{color:#b8863a;font-weight:700}
+        .result-card.ninecode .code-steps .arrow{color:#a0806a}
 
         .letters-info{background:#fcf3e8;border-radius:12px;padding:10px 16px;margin-top:8px;border:1px solid #e8dccc;font-size:14px;text-align:left}
         .letters-info .vowel{color:#b34a3a;font-weight:700}
@@ -102,12 +109,12 @@
         <h1>Сантария <span>| Чайник-калькулятор</span></h1>
     </div>
     <div class="subtitle">
-        <span class="emoji">📖</span> Код → звуки → цифры → одно число
+        <span class="emoji">📖</span> Код → звуки → 9-значный код → цифра
         <span style="margin-left:auto;font-size:13px;color:#bba28c;">☕ для чайников</span>
     </div>
     
     <div class="input-row">
-        <textarea id="inputText" placeholder="Введите код... например: 369108358">369108358</textarea>
+        <textarea id="inputText" placeholder="Введите код, слово или фразу...&#10;Например: 369108358 или ирина ивановна ерёменко">369108358</textarea>
         <div class="btn-group">
             <button class="btn-calc" onclick="calculate()">🧮 Заварить!</button>
             <button class="btn-decode" onclick="decodeCode()">🔀 Код → звуки</button>
@@ -151,7 +158,7 @@
     </div>
     
     <div class="footer">
-        ☕ Всё просто: код → звуки → цифры → одно число (1-9)
+        ☕ Всё просто: код → звуки → 9-значный код → цифра (1-9)
         <br>
         <span style="font-size:12px; color:#a0806a;">✨ Сантария ✨</span>
     </div>
@@ -227,12 +234,13 @@
         updateHistoryUI();
     }
     
-    function addHistoryEntry(input, result, mantra, codeResult, timestamp) {
+    function addHistoryEntry(input, result, mantra, codeResult, nineCode, timestamp) {
         const entry = {
             input: input,
             result: result,
             mantra: mantra || '',
             codeResult: codeResult || '',
+            nineCode: nineCode || '',
             timestamp: timestamp || new Date().toLocaleString('ru-RU')
         };
         history.unshift(entry);
@@ -254,11 +262,13 @@
         history.forEach((item, index) => {
             const num = history.length - index;
             let displayCode = item.input.length > 40 ? item.input.slice(0, 37) + '...' : item.input;
+            let displayResult = item.result;
+            if (item.nineCode) displayResult += ' | 9к: ' + item.nineCode;
             html += `
                 <div class="history-item">
                     <span class="h-number">#${num}</span>
                     <span class="h-code" title="${item.input}">${displayCode}</span>
-                    <span class="h-result">${item.result}</span>
+                    <span class="h-result">${displayResult}</span>
                     <span class="h-time">${item.timestamp}</span>
                 </div>
             `;
@@ -323,6 +333,110 @@
     }
     
     // ============================================
+    // РАСЧЁТ 9-ЗНАЧНОГО КОДА
+    // ============================================
+    
+    function calculateNineCode(text) {
+        // Убираем пробелы, переводим в нижний регистр
+        const clean = text.toLowerCase().replace(/\s/g, '');
+        if (!clean) return null;
+        
+        // Переводим буквы в цифры
+        let digits = '';
+        let letterDetails = [];
+        let vowels = [];
+        let consonants = [];
+        
+        for (let char of clean) {
+            const val = MANTRA_MAP[char];
+            if (val !== undefined) {
+                digits += val;
+                letterDetails.push({letter: char, digit: val});
+                if (VOWELS.includes(char)) {
+                    vowels.push(char);
+                } else {
+                    consonants.push(char);
+                }
+            }
+        }
+        
+        if (digits.length === 0) return null;
+        
+        // === ПОШАГОВОЕ СВЁРТЫВАНИЕ ===
+        let currentDigits = digits.split('').map(Number);
+        let allSteps = [];
+        let stepIndex = 0;
+        
+        // Сохраняем начальный ряд
+        allSteps.push({
+            label: 'Исходный ряд',
+            digits: currentDigits.slice(),
+            display: currentDigits.join(' ')
+        });
+        
+        // Сворачиваем попарно
+        while (currentDigits.length > 3) {
+            let nextDigits = [];
+            let pairs = [];
+            
+            for (let i = 0; i < currentDigits.length; i += 2) {
+                if (i + 1 < currentDigits.length) {
+                    const sum = currentDigits[i] + currentDigits[i + 1];
+                    nextDigits.push(sum);
+                    pairs.push(`${currentDigits[i]}+${currentDigits[i+1]}=${sum}`);
+                } else {
+                    // Если остался один элемент — переносим
+                    nextDigits.push(currentDigits[i]);
+                    pairs.push(`${currentDigits[i]} (перенос)`);
+                }
+            }
+            
+            stepIndex++;
+            allSteps.push({
+                label: `Шаг ${stepIndex}`,
+                digits: nextDigits.slice(),
+                display: nextDigits.join(' '),
+                pairs: pairs
+            });
+            
+            currentDigits = nextDigits;
+        }
+        
+        // Добавляем 369
+        let finalDigits = currentDigits.slice();
+        finalDigits.push(3, 6, 9);
+        allSteps.push({
+            label: 'Добавляем 369',
+            digits: finalDigits.slice(),
+            display: finalDigits.join(' '),
+            note: '➕ Добавлены 3, 6, 9'
+        });
+        
+        // Получаем 9-значный код
+        let nineCode = finalDigits.join('');
+        
+        // Если получилось больше 9 цифр — убираем нули и обрезаем
+        if (nineCode.length > 9) {
+            nineCode = nineCode.replace(/0/g, '');
+            if (nineCode.length > 9) {
+                nineCode = nineCode.slice(0, 9);
+            }
+        }
+        
+        // Если меньше 9 — добиваем нулями? Нет, оставляем как есть
+        // (по условию — код состоит из 9 цифр, без нулей)
+        
+        return {
+            nineCode: nineCode,
+            steps: allSteps,
+            vowels: vowels,
+            consonants: consonants,
+            originalDigits: digits,
+            letterDetails: letterDetails
+        };
+    }
+    
+    // ============================================
     // ОСНОВНОЙ РАСЧЁТ
     // ============================================
     
@@ -345,17 +459,21 @@
         
         const cleanInput = input.replace(/\s/g, '');
         const isOnlyDigits = /^[0-9]+$/.test(cleanInput);
+        const isLetters = /^[а-яА-ЯёЁ\s]+$/.test(input);
         let textToProcess = input;
         let decodedText = '';
         let isDecoded = false;
         let codeResult = '';
+        let nineCodeResult = '';
         
+        // Если только цифры — декодируем в мантру
         if (isOnlyDigits) {
             decodedText = decodeCodeToLetters(cleanInput);
             textToProcess = decodedText;
             isDecoded = true;
         }
         
+        // ===== ОБЩИЙ РАСЧЁТ (мантра) =====
         let total = 0;
         let validCount = 0;
         let unknownChars = [];
@@ -419,6 +537,7 @@
         }
         sumDisplay += ' = ' + finalNumber;
         
+        // ===== РАСЧЁТ КОДА (если были цифры) =====
         let codeCardHtml = '';
         let codeFinal = '';
         if (isOnlyDigits) {
@@ -449,6 +568,69 @@
             `;
         }
         
+        // ===== РАСЧЁТ 9-ЗНАЧНОГО КОДА (если введены буквы) =====
+        let nineCardHtml = '';
+        let nineCodeFinal = '';
+        if (isLetters || !isOnlyDigits) {
+            const nineResult = calculateNineCode(input);
+            if (nineResult) {
+                nineCodeFinal = nineResult.nineCode;
+                
+                // Формируем пошаговый вывод
+                let stepsHtml = '';
+                for (let step of nineResult.steps) {
+                    let label = step.label;
+                    let display = step.display;
+                    if (step.note) {
+                        stepsHtml += `<div>${label}: ${display} <span style="color:#a0806a;font-size:12px;">${step.note}</span></div>`;
+                    } else {
+                        stepsHtml += `<div>${label}: ${display}</div>`;
+                    }
+                    // Показываем пары для первых шагов
+                    if (step.pairs && step.pairs.length > 0) {
+                        stepsHtml += `<div style="color:#a0806a;font-size:12px;padding-left:20px;">${step.pairs.join(' | ')}</div>`;
+                    }
+                }
+                
+                // Подсчёт итоговой цифры 9-значного кода
+                const nineDigits = nineCodeFinal.split('').map(Number);
+                let nineSum = 0;
+                let nineSumStr = '';
+                for (let d of nineDigits) {
+                    nineSum += d;
+                    if (nineSumStr) nineSumStr += '+';
+                    nineSumStr += d;
+                }
+                const nineReduction = reduceToSingleDigit(nineSum);
+                const nineFinal = nineReduction.final;
+                let nineSumDisplay = nineSumStr + ' = ' + nineSum;
+                if (nineReduction.steps.length > 1) {
+                    nineSumDisplay += ' → ' + nineReduction.steps.join(' → ');
+                }
+                nineSumDisplay += ' = ' + nineFinal;
+                
+                // Гласные/согласные для 9-кода
+                let nineVowels = nineResult.vowels.length > 0 ? nineResult.vowels.join(', ') : '—';
+                let nineConsonants = nineResult.consonants.length > 0 ? nineResult.consonants.join(', ') : '—';
+                
+                nineCardHtml = `
+                    <div class="result-card ninecode">
+                        <div class="card-title">🔢 9-значный код</div>
+                        <div class="code-display" style="font-size:28px;color:#4a2a4a;">${nineCodeFinal}</div>
+                        <div class="code-steps">${stepsHtml}</div>
+                        <div class="card-number" style="color:#4a2a4a;">${nineFinal}</div>
+                        <div class="card-sum" style="border-color:#c8b0c8;">${nineSumDisplay}</div>
+                        <div class="letters-info" style="background:#f4eef4;border-color:#d0c0d0;">
+                            <span class="label">🔊 Гласные:</span> <span class="vowel">${nineVowels}</span>
+                            &nbsp;|&nbsp;
+                            <span class="label">🔇 Согласные:</span> <span class="consonant">${nineConsonants}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // ===== МАНТРА =====
         let lettersHtml = '';
         if (vowelsFound.length > 0 || consonantsFound.length > 0) {
             let infoHtml = '';
@@ -485,18 +667,23 @@
             </div>
         `;
         
+        // ===== СБОРКА =====
         let gridHtml = '';
         if (isOnlyDigits) {
             gridHtml = `<div class="results-grid">${codeCardHtml}${mantraCardHtml}</div>`;
+        } else if (isLetters || !isOnlyDigits) {
+            gridHtml = `<div class="results-grid" style="grid-template-columns:1fr 1fr;">${nineCardHtml}${mantraCardHtml}</div>`;
         } else {
             gridHtml = `<div class="results-grid" style="grid-template-columns:1fr;">${mantraCardHtml}</div>`;
         }
         
         container.innerHTML = gridHtml;
         
+        // ===== СОХРАНЯЕМ В ИСТОРИЮ =====
         const resultDisplay = isOnlyDigits ? `${codeFinal} / ${finalNumber}` : `${finalNumber}`;
-        addHistoryEntry(input.trim(), resultDisplay, mantraSoundRow, codeFinal);
+        addHistoryEntry(input.trim(), resultDisplay, mantraSoundRow, codeFinal, nineCodeFinal);
         
+        // Инфо
         let stats = [];
         if (letterCount > 0) stats.push(`букв: ${letterCount}`);
         if (digitCount > 0) stats.push(`цифр: ${digitCount}`);
@@ -558,18 +745,18 @@
         if (window.location.protocol !== 'file:') {
             return window.location.href;
         }
-        return 'https://ваш-сайт.com/chaynik-calculator.html';
+        return 'https://santaria369.github.io/chaynik-calculator/';
     }
     
     function shareTelegram() {
         const url = getShareUrl();
-        const text = encodeURIComponent('🫖 Сантария | Чайник-калькулятор — перевожу код в звуки и обратно!');
+        const text = encodeURIComponent('🫖 Сантария | Чайник-калькулятор — перевожу код в звуки и 9-значный код!');
         window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${text}`, '_blank');
     }
     
     function shareWhatsApp() {
         const url = getShareUrl();
-        const text = encodeURIComponent('🫖 Сантария | Чайник-калькулятор — узнайте своё число!');
+        const text = encodeURIComponent('🫖 Сантария | Чайник-калькулятор — узнайте свой 9-значный код!');
         window.open(`https://api.whatsapp.com/send?text=${text}%20${encodeURIComponent(url)}`, '_blank');
     }
     
