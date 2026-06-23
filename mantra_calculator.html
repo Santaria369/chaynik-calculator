@@ -1,0 +1,677 @@
+html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Калькулятор чисел и мантр</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8edf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            margin-top: 20px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #1a2332;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .subtitle {
+            color: #5a6e85;
+            font-size: 14px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #eef2f7;
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 16px;
+            border: 2px solid #dce3ed;
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            color: #4a5e77;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .mode-btn:hover {
+            border-color: #8aa3c9;
+            background: #f8faff;
+        }
+        
+        .mode-btn.active {
+            border-color: #4a7cf7;
+            background: #eef4ff;
+            color: #1a3b6b;
+            box-shadow: 0 0 0 3px rgba(74, 124, 247, 0.15);
+        }
+        
+        .mode-btn .badge {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            color: #7a8ea5;
+            margin-top: 3px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 110px;
+            padding: 16px;
+            font-size: 20px;
+            border: 2px solid #dce3ed;
+            border-radius: 18px;
+            font-family: inherit;
+            resize: vertical;
+            transition: 0.3s;
+            background: #fafcff;
+        }
+        
+        textarea:focus {
+            border-color: #4a7cf7;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(74, 124, 247, 0.1);
+            background: white;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn-group button {
+            flex: 1;
+            min-width: 100px;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 40px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .btn-calc {
+            background: #1a3b6b;
+            color: white;
+        }
+        
+        .btn-calc:hover {
+            background: #0f2a4f;
+            transform: scale(1.02);
+        }
+        
+        .btn-clear {
+            background: #e9edf4;
+            color: #1f2a3a;
+        }
+        
+        .btn-clear:hover {
+            background: #d5dce6;
+        }
+        
+        .btn-example {
+            background: #eef4ff;
+            color: #1a3b6b;
+            border: 2px solid #dce3ed;
+        }
+        
+        .btn-example:hover {
+            background: #dce8ff;
+        }
+        
+        .result-box {
+            background: #f3f7fe;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #dce4ef;
+            margin-bottom: 16px;
+        }
+        
+        .result-number {
+            font-size: 56px;
+            font-weight: 800;
+            color: #0b1e33;
+            line-height: 1.2;
+        }
+        
+        .result-number .secondary {
+            font-size: 24px;
+            font-weight: 400;
+            color: #7a8ea5;
+        }
+        
+        .result-label {
+            font-size: 13px;
+            color: #5a6e85;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+        
+        .result-sum {
+            font-size: 15px;
+            color: #2c405a;
+            background: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            display: inline-block;
+            margin-top: 6px;
+            border: 1px solid #dce4ef;
+        }
+        
+        .interpretation {
+            margin-top: 10px;
+            padding: 12px 16px;
+            background: #eef4ff;
+            border-radius: 14px;
+            font-size: 15px;
+            color: #1a3b6b;
+            border-left: 4px solid #4a7cf7;
+            text-align: left;
+        }
+        
+        .steps {
+            background: #f7faff;
+            border-radius: 16px;
+            padding: 14px 16px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #e2e9f3;
+            line-height: 2.2;
+            margin-top: 4px;
+        }
+        
+        .steps .tag {
+            display: inline-block;
+            background: white;
+            padding: 0 12px;
+            border-radius: 30px;
+            border: 1px solid #d0dbe8;
+            font-size: 13px;
+            margin: 2px 3px 2px 0;
+        }
+        
+        .steps .highlight {
+            background: #d4e2ff;
+            border-color: #6f9aff;
+            font-weight: 700;
+        }
+        
+        .steps .final-tag {
+            background: #1a3b6b;
+            color: white;
+            font-weight: 700;
+            border-color: #1a3b6b;
+        }
+        
+        .error {
+            color: #c73b3b;
+            font-size: 14px;
+            padding: 8px 16px;
+            background: #ffe9e9;
+            border-radius: 30px;
+            display: none;
+            margin-top: 8px;
+        }
+        
+        .error.show {
+            display: inline-block;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #4f667e;
+            margin: 10px 0 4px 0;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .badge {
+            background: #eef3fa;
+            padding: 3px 16px;
+            border-radius: 30px;
+        }
+        
+        .table-ref {
+            margin-top: 16px;
+            padding: 14px 16px;
+            background: #f8faff;
+            border-radius: 14px;
+            border: 1px solid #e2e9f3;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .table-ref strong {
+            color: #1a3b6b;
+        }
+        
+        .table-ref .row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .table-ref .num {
+            display: inline-block;
+            min-width: 20px;
+            font-weight: 700;
+            color: #1a3b6b;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #7a8ea5;
+            border-top: 1px solid #eef2f7;
+            padding-top: 16px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 18px;
+            }
+            .result-number {
+                font-size: 40px;
+            }
+            .mode-btn {
+                min-width: 100px;
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔢 Калькулятор</h1>
+    <div class="subtitle">Перевод букв в цифры и сведение к одному числу</div>
+    
+    <!-- Выбор режима -->
+    <div class="mode-selector">
+        <button class="mode-btn active" data-mode="classic" onclick="setMode('classic')">
+            📚 Классический
+            <span class="badge">а=1, б=2 ... я=33</span>
+        </button>
+        <button class="mode-btn" data-mode="mantra" onclick="setMode('mantra')">
+            🔮 Мантры
+            <span class="badge">а,и,с,ъ=1 ... з,р,щ=9</span>
+        </button>
+    </div>
+    
+    <!-- Поле ввода -->
+    <textarea id="inputText" placeholder="Введите слово или текст...">ом намаха шивая</textarea>
+    
+    <!-- Кнопки -->
+    <div class="btn-group">
+        <button class="btn-calc" onclick="calculate()">🧮 Рассчитать</button>
+        <button class="btn-clear" onclick="clearAll()">✕ Очистить</button>
+        <button class="btn-example" onclick="loadExample()">📋 Пример</button>
+    </div>
+    
+    <!-- Результат -->
+    <div class="result-box">
+        <div class="result-number" id="resultNumber">
+            <span class="secondary">—</span>
+        </div>
+        <div class="result-label" id="resultLabel">ИТОГОВОЕ ЧИСЛО</div>
+        <div class="result-sum" id="originalSum">Сумма: —</div>
+        <div class="interpretation" id="interpretation" style="display:none;"></div>
+    </div>
+    
+    <!-- Пошагово -->
+    <div style="font-size:13px; color:#4f667e; margin-bottom:2px;">📋 Пошаговый расчёт</div>
+    <div class="steps" id="stepsList">Введите текст и нажмите «Рассчитать»</div>
+    
+    <!-- Ошибка -->
+    <div class="error" id="errorMessage"></div>
+    
+    <!-- Инфо -->
+    <div class="info-row">
+        <span class="badge" id="letterCount">Букв: 0</span>
+        <span class="badge" id="reductionInfo">Свёрнуто: —</span>
+    </div>
+    
+    <!-- Таблица соответствий (обновляется при смене режима) -->
+    <div class="table-ref" id="tableRef">
+        <strong>📖 Соответствие букв и чисел:</strong>
+        <div id="tableContent"></div>
+    </div>
+    
+    <div class="footer">
+        ⚡ Все числа сводятся к однозначному (1-9)
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // 1. СЛОВАРИ ДЛЯ РАЗНЫХ РЕЖИМОВ
+    // ============================================
+    
+    // Классический: а=1, б=2 ... я=33
+    const CLASSIC_ALPHABET = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя';
+    const CLASSIC_MAP = {};
+    for (let i = 0; i < CLASSIC_ALPHABET.length; i++) {
+        CLASSIC_MAP[CLASSIC_ALPHABET[i]] = i + 1;
+    }
+    
+    // Мантры: а,и,с,ъ=1; б,й,т,ы=2; и т.д.
+    const MANTRA_MAP = {
+        'а': 1, 'и': 1, 'с': 1, 'ъ': 1,
+        'б': 2, 'й': 2, 'т': 2, 'ы': 2,
+        'в': 3, 'к': 3, 'у': 3, 'ь': 3,
+        'г': 4, 'л': 4, 'ф': 4, 'э': 4,
+        'д': 5, 'м': 5, 'х': 5, 'ю': 5,
+        'е': 6, 'н': 6, 'ц': 6, 'я': 6,
+        'ё': 7, 'о': 7, 'ч': 7,
+        'ж': 8, 'п': 8, 'ш': 8,
+        'з': 9, 'р': 9, 'щ': 9
+    };
+    
+    // Таблицы для отображения
+    const TABLES = {
+        classic: [
+            'а-1, б-2, в-3, г-4, д-5, е-6, ё-7, ж-8, з-9',
+            'и-10, й-11, к-12, л-13, м-14, н-15, о-16, п-17, р-18',
+            'с-19, т-20, у-21, ф-22, х-23, ц-24, ч-25, ш-26, щ-27',
+            'ъ-28, ы-29, ь-30, э-31, ю-32, я-33'
+        ],
+        mantra: [
+            '1: а, и, с, ъ',
+            '2: б, й, т, ы',
+            '3: в, к, у, ь',
+            '4: г, л, ф, э',
+            '5: д, м, х, ю',
+            '6: е, н, ц, я',
+            '7: ё, о, ч',
+            '8: ж, п, ш',
+            '9: з, р, щ'
+        ]
+    };
+    
+    // Интерпретация чисел
+    const INTERPRETATIONS = {
+        1: '🌟 Единство, начало, лидерство, независимость',
+        2: '🤝 Гармония, партнёрство, дипломатичность, баланс',
+        3: '🎨 Творчество, общение, радость, самовыражение',
+        4: '🏛️ Стабильность, порядок, труд, дисциплина',
+        5: '🦋 Свобода, перемены, приключения, адаптивность',
+        6: '💖 Любовь, ответственность, семья, забота',
+        7: '🔮 Мудрость, духовность, анализ, интуиция',
+        8: '⚡ Успех, власть, трансформация, изобилие',
+        9: '🌍 Завершение, гуманизм, мудрость, альтруизм'
+    };
+    
+    // ============================================
+    // 2. СОСТОЯНИЕ
+    // ============================================
+    
+    let currentMode = 'classic'; // 'classic' или 'mantra'
+    
+    // ============================================
+    // 3. ФУНКЦИИ
+    // ============================================
+    
+    function getMap() {
+        return currentMode === 'classic' ? CLASSIC_MAP : MANTRA_MAP;
+    }
+    
+    function getModeName() {
+        return currentMode === 'classic' ? 'Классический' : 'Мантры';
+    }
+    
+    function setMode(mode) {
+        currentMode = mode;
+        
+        // Обновляем активную кнопку
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.mode === mode);
+        });
+        
+        // Обновляем таблицу
+        updateTable();
+        
+        // Пересчитываем, если есть текст
+        const input = document.getElementById('inputText').value;
+        if (input.trim()) {
+            calculate();
+        }
+    }
+    
+    function updateTable() {
+        const container = document.getElementById('tableContent');
+        const rows = TABLES[currentMode];
+        container.innerHTML = rows.map(row => `<div>${row}</div>`).join('');
+    }
+    
+    function reduceToSingleDigit(num) {
+        if (num === 0) return { final: 0, steps: [0] };
+        
+        let result = num;
+        const steps = [num];
+        
+        while (result > 9) {
+            const digits = String(result).split('').map(Number);
+            const sum = digits.reduce((a, b) => a + b, 0);
+            steps.push(sum);
+            result = sum;
+        }
+        
+        return { final: result, steps };
+    }
+    
+    function calculate() {
+        const input = document.getElementById('inputText').value;
+        const resultNumberEl = document.getElementById('resultNumber');
+        const stepsList = document.getElementById('stepsList');
+        const errorEl = document.getElementById('errorMessage');
+        const originalSumEl = document.getElementById('originalSum');
+        const letterCountEl = document.getElementById('letterCount');
+        const reductionInfoEl = document.getElementById('reductionInfo');
+        const interpretationEl = document.getElementById('interpretation');
+        const resultLabel = document.getElementById('resultLabel');
+        
+        // Скрываем ошибку
+        errorEl.classList.remove('show');
+        errorEl.textContent = '';
+        interpretationEl.style.display = 'none';
+        
+        // Если пусто
+        if (!input.trim()) {
+            resultNumberEl.innerHTML = `<span class="secondary">—</span>`;
+            originalSumEl.textContent = 'Сумма: —';
+            stepsList.innerHTML = 'Введите текст и нажмите «Рассчитать»';
+            letterCountEl.textContent = 'Букв: 0';
+            reductionInfoEl.textContent = 'Свёрнуто: —';
+            resultLabel.textContent = 'ИТОГОВОЕ ЧИСЛО';
+            return;
+        }
+        
+        const map = getMap();
+        let total = 0;
+        const details = [];
+        let validCount = 0;
+        let unknownChars = [];
+        
+        // Проходим по символам
+        for (let i = 0; i < input.length; i++) {
+            const char = input[i];
+            
+            if (char === ' ') {
+                details.push(`<span class="tag" style="color:#999;">пробел</span>`);
+                continue;
+            }
+            
+            const lower = char.toLowerCase();
+            const value = map[lower];
+            
+            if (value === undefined) {
+                unknownChars.push(char);
+                details.push(`<span class="tag" style="background:#ffe3e3;border-color:#f5a0a0;">'${char}' (пропуск)</span>`);
+            } else {
+                total += value;
+                validCount++;
+                details.push(`<span class="tag">'${char}' → ${value}</span>`);
+            }
+        }
+        
+        // Если нет валидных букв
+        if (validCount === 0) {
+            resultNumberEl.innerHTML = `<span class="secondary">0</span>`;
+            originalSumEl.textContent = 'Сумма: 0';
+            stepsList.innerHTML = '❌ Нет букв для расчёта';
+            letterCountEl.textContent = 'Букв: 0';
+            reductionInfoEl.textContent = 'Свёрнуто: —';
+            resultLabel.textContent = 'ИТОГОВОЕ ЧИСЛО';
+            
+            if (unknownChars.length > 0) {
+                errorEl.textContent = `⚠️ Неизвестные символы: ${unknownChars.join(', ')} (пропущены)`;
+                errorEl.classList.add('show');
+            }
+            return;
+        }
+        
+        // Сворачиваем
+        const reduction = reduceToSingleDigit(total);
+        const finalNumber = reduction.final;
+        
+        // Показываем результат
+        resultNumberEl.innerHTML = `${finalNumber}`;
+        resultLabel.textContent = `ЧИСЛО ${getModeName()}`;
+        originalSumEl.textContent = `Сумма: ${total}`;
+        
+        // Интерпретация
+        if (finalNumber >= 1 && finalNumber <= 9) {
+            interpretationEl.textContent = INTERPRETATIONS[finalNumber] || '';
+            interpretationEl.style.display = 'block';
+        }
+        
+        // Пошагово
+        let stepsHtml = details.join(' ');
+        
+        // Процесс сворачивания
+        if (reduction.steps.length > 1) {
+            const arrowSteps = reduction.steps.join(' → ');
+            stepsHtml += ` &nbsp;|→&nbsp; <span class="tag highlight">${arrowSteps}</span>`;
+        } else {
+            stepsHtml += ` &nbsp;|→&nbsp; <span class="tag highlight">${total} (уже однозначное)</span>`;
+        }
+        
+        stepsHtml += ` &nbsp;➜ <span class="tag final-tag">${finalNumber}</span>`;
+        stepsList.innerHTML = stepsHtml;
+        
+        // Доп. информация
+        letterCountEl.textContent = `Букв: ${validCount}`;
+        const stepsStr = reduction.steps.length > 1 ? reduction.steps.join('→') : `${total} (1 шаг)`;
+        reductionInfoEl.textContent = `Свёрнуто: ${total} → ${stepsStr} → ${finalNumber}`;
+        
+        // Ошибка если есть неизвестные
+        if (unknownChars.length > 0) {
+            const show = unknownChars.slice(0, 10).join(', ');
+            const more = unknownChars.length > 10 ? ` и ещё ${unknownChars.length - 10}` : '';
+            errorEl.textContent = `⚠️ Пропущены: ${show}${more} (неизвестные символы)`;
+            errorEl.classList.add('show');
+        }
+    }
+    
+    function clearAll() {
+        document.getElementById('inputText').value = '';
+        document.getElementById('resultNumber').innerHTML = `<span class="secondary">—</span>`;
+        document.getElementById('stepsList').innerHTML = 'Введите текст и нажмите «Рассчитать»';
+        document.getElementById('originalSum').textContent = 'Сумма: —';
+        document.getElementById('letterCount').textContent = 'Букв: 0';
+        document.getElementById('reductionInfo').textContent = 'Свёрнуто: —';
+        document.getElementById('resultLabel').textContent = 'ИТОГОВОЕ ЧИСЛО';
+        document.getElementById('interpretation').style.display = 'none';
+        const errorEl = document.getElementById('errorMessage');
+        errorEl.classList.remove('show');
+        errorEl.textContent = '';
+    }
+    
+    function loadExample() {
+        const examples = {
+            classic: ['привет мир', 'абвгдеёжз', 'яблоко', 'нумерология'],
+            mantra: ['ом намаха шивая', 'ом мани падме хум', 'гаятри мантра', 'харе кришна']
+        };
+        
+        const examplesList = examples[currentMode] || examples.classic;
+        const randomExample = examplesList[Math.floor(Math.random() * examplesList.length)];
+        document.getElementById('inputText').value = randomExample;
+        calculate();
+    }
+    
+    // ============================================
+    // 4. ЗАПУСК
+    // ============================================
+    
+    // При загрузке
+    window.onload = function() {
+        updateTable();
+        // Авторасчёт примера
+        setTimeout(calculate, 100);
+    };
+    
+    // Авторасчёт при вводе (с задержкой)
+    let timer;
+    document.getElementById('inputText').addEventListener('input', function() {
+        clearTimeout(timer);
+        timer = setTimeout(calculate, 600);
+    });
+    
+    // Enter для быстрого расчёта
+    document.getElementById('inputText').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            calculate();
+        }
+    });
+</script>
+
+</body>
+</html>
