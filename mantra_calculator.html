@@ -74,7 +74,6 @@
         .result-card.ninecode .card-number{color:#4a2a4a}
         .result-card.ninecode .code-steps{font-size:13px;font-family:'Courier New',monospace;color:#5a3e5a;word-break:break-all;margin:4px 0;padding:6px 12px;background:#f4eef4;border-radius:8px;border:1px dashed #d0c0d0;line-height:1.8}
         .result-card.ninecode .code-steps .highlight{color:#b8863a;font-weight:700}
-        .result-card.ninecode .code-steps .arrow{color:#a0806a}
 
         .letters-info{background:#fcf3e8;border-radius:12px;padding:10px 16px;margin-top:8px;border:1px solid #e8dccc;font-size:14px;text-align:left}
         .letters-info .vowel{color:#b34a3a;font-weight:700}
@@ -339,7 +338,6 @@
         
         // Переводим буквы в цифры
         let digits = '';
-        let letterDetails = [];
         let vowels = [];
         let consonants = [];
         
@@ -347,7 +345,6 @@
             const val = MANTRA_MAP[char];
             if (val !== undefined) {
                 digits += val;
-                letterDetails.push({letter: char, digit: val});
                 if (VOWELS.includes(char)) {
                     vowels.push(char);
                 } else {
@@ -363,16 +360,14 @@
         let allSteps = [];
         let stepIndex = 0;
         
-        // Сохраняем начальный ряд
         allSteps.push({
             label: 'Исходный ряд',
             digits: currentDigits.slice(),
             display: currentDigits.join(' ')
         });
         
-        // Сворачиваем попарно, пока не получим ровно 9 цифр
-        // или пока не останется 3 цифры (как в примере)
-        while (currentDigits.length > 9) {
+        // Сворачиваем попарно, пока не получим 3 цифры
+        while (currentDigits.length > 3) {
             let nextDigits = [];
             let pairs = [];
             
@@ -382,7 +377,6 @@
                     nextDigits.push(sum);
                     pairs.push(`${currentDigits[i]}+${currentDigits[i+1]}=${sum}`);
                 } else {
-                    // Если остался один элемент — переносим
                     nextDigits.push(currentDigits[i]);
                     pairs.push(`${currentDigits[i]} (перенос)`);
                 }
@@ -399,25 +393,16 @@
             currentDigits = nextDigits;
         }
         
-        // Если получилось меньше 9 цифр — добавляем 369 до 9 цифр
+        // Теперь у нас 3 цифры (или меньше)
+        // Добавляем 369
         let finalDigits = currentDigits.slice();
-        while (finalDigits.length < 9) {
-            // Добавляем 3, 6, 9 по очереди
-            if (finalDigits.length < 9) finalDigits.push(3);
-            if (finalDigits.length < 9) finalDigits.push(6);
-            if (finalDigits.length < 9) finalDigits.push(9);
-        }
-        
-        // Если больше 9 — обрезаем до 9
-        if (finalDigits.length > 9) {
-            finalDigits = finalDigits.slice(0, 9);
-        }
+        finalDigits.push(3, 6, 9);
         
         allSteps.push({
-            label: 'Финальный код',
+            label: 'Добавляем 369',
             digits: finalDigits.slice(),
             display: finalDigits.join(' '),
-            note: '✅ 9 цифр готово'
+            note: '➕ Добавлены 3, 6, 9'
         });
         
         let nineCode = finalDigits.join('');
@@ -427,8 +412,7 @@
             steps: allSteps,
             vowels: vowels,
             consonants: consonants,
-            originalDigits: digits,
-            letterDetails: letterDetails
+            originalDigits: digits
         };
     }
     
@@ -575,14 +559,18 @@
                 for (let step of nineResult.steps) {
                     let label = step.label;
                     let display = step.display;
+                    let pairsHtml = '';
+                    
+                    if (step.pairs && step.pairs.length > 0 && step.pairs[0] !== '') {
+                        pairsHtml = `<div style="color:#a0806a;font-size:12px;padding-left:20px;">${step.pairs.join(' | ')}</div>`;
+                    }
+                    
                     if (step.note) {
                         stepsHtml += `<div>${label}: ${display} <span style="color:#a0806a;font-size:12px;">${step.note}</span></div>`;
                     } else {
                         stepsHtml += `<div>${label}: ${display}</div>`;
                     }
-                    if (step.pairs && step.pairs.length > 0 && step.pairs[0] !== '') {
-                        stepsHtml += `<div style="color:#a0806a;font-size:12px;padding-left:20px;">${step.pairs.join(' | ')}</div>`;
-                    }
+                    stepsHtml += pairsHtml;
                 }
                 
                 // Подсчёт итоговой цифры 9-значного кода
@@ -605,13 +593,10 @@
                 let nineVowels = nineResult.vowels.length > 0 ? nineResult.vowels.join(', ') : '—';
                 let nineConsonants = nineResult.consonants.length > 0 ? nineResult.consonants.join(', ') : '—';
                 
-                // Оцифровка для отображения
-                let oцифровка = nineResult.originalDigits || '';
-                
                 nineCardHtml = `
                     <div class="result-card ninecode">
                         <div class="card-title">🔢 9-значный код</div>
-                        <div style="font-size:13px;color:#6a4a6a;margin-bottom:4px;">Оцифровка: ${oцифровка}</div>
+                        <div style="font-size:13px;color:#6a4a6a;margin-bottom:4px;">Оцифровка: ${nineResult.originalDigits}</div>
                         <div class="code-display" style="font-size:28px;color:#4a2a4a;">${nineCodeFinal}</div>
                         <div class="code-steps">${stepsHtml}</div>
                         <div class="card-number" style="color:#4a2a4a;">${nineFinal}</div>
