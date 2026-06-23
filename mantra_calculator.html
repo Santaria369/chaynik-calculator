@@ -329,7 +329,7 @@
     }
     
     // ============================================
-    // РАСЧЁТ 9-ЗНАЧНОГО КОДА
+    // РАСЧЁТ 9-ЗНАЧНОГО КОДА (БЕЗ НУЛЕЙ)
     // ============================================
     
     function calculateNineCode(text) {
@@ -384,10 +384,16 @@
                 for (let i = 0; i < currentDigits.length; i += 2) {
                     if (i + 1 < currentDigits.length) {
                         const sum = currentDigits[i] + currentDigits[i + 1];
-                        nextDigits.push(sum);
+                        // 0 не добавляем!
+                        if (sum !== 0) {
+                            nextDigits.push(sum);
+                        }
                         pairs.push(`${currentDigits[i]}+${currentDigits[i+1]}=${sum}`);
                     } else {
-                        nextDigits.push(currentDigits[i]);
+                        // 0 не добавляем!
+                        if (currentDigits[i] !== 0) {
+                            nextDigits.push(currentDigits[i]);
+                        }
                         pairs.push(`${currentDigits[i]} (перенос)`);
                     }
                 }
@@ -417,11 +423,25 @@
             // Если получилось больше 9 — обрезаем
             if (finalDigits.length > 9) {
                 finalDigits = finalDigits.slice(0, 9);
+            }
+            
+            // Если в коде есть 0 — удаляем и добиваем до 9
+            let nineCodeStr = finalDigits.join('');
+            if (nineCodeStr.includes('0')) {
+                nineCodeStr = nineCodeStr.replace(/0/g, '');
+                // Добавляем 369 пока не станет 9 цифр
+                while (nineCodeStr.length < 9) {
+                    nineCodeStr += '369';
+                }
+                if (nineCodeStr.length > 9) {
+                    nineCodeStr = nineCodeStr.slice(0, 9);
+                }
+                finalDigits = nineCodeStr.split('').map(Number);
                 allSteps.push({
-                    label: 'Финальный код',
+                    label: 'Удаляем нули',
                     digits: finalDigits.slice(),
                     display: finalDigits.join(' '),
-                    note: '✅ 9 цифр — код готов'
+                    note: '🧹 0 удалены, добито до 9 цифр'
                 });
             }
         }
