@@ -160,7 +160,7 @@
     </div>
     
     <div class="input-row">
-        <textarea id="inputText" placeholder="Введите код, слово или фразу...&#10;Например: 369108358 или ирина ивановна ерёменко">хочу денег</textarea>
+        <textarea id="inputText" placeholder="Введите код, слово или фразу...&#10;Например: 369108358 или я денежный магнит">я денежный магнит</textarea>
         <div class="btn-group">
             <button class="btn-calc" onclick="calculate()">🧮 Заварить!</button>
             <button class="btn-decode" onclick="decodeCode()">🔀 Код → звуки</button>
@@ -211,7 +211,7 @@
             <a href="https://vk.com/santaria369" target="_blank" title="ВКонтакте">
                 <span class="icon">🌐</span> ВКонтакте
             </a>
-            <a href="https://max.ru/u/f9LHodD0cOL80qj158wWUdXqYH20jvlAT12hozq13bM-6PB6FMSsQWhB2AA" target="_blank" title="MAX">
+            <a href="https://max.ru/join/_3fGycVf-hzwYBs2c5hxJxXrxjqMuz33GJn8FpXShKQ" target="_blank" title="MAX">
                 <span class="icon">💬</span> MAX
             </a>
         </div>
@@ -803,6 +803,7 @@
     window.onload = function() {
         updateTable();
         loadHistory();
+        // Автоматический расчёт примера
         setTimeout(calculate, 150);
         if (window.location.protocol !== 'file:') {
             document.getElementById('shareButtons').style.display = 'flex';
