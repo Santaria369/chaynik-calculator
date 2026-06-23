@@ -124,6 +124,7 @@
         .result-card.ninecode .card-number{color:#5a3e2b}
         .result-card.ninecode .code-steps{font-size:13px;font-family:'Courier New',monospace;color:#5a3e5a;word-break:break-all;margin:4px 0;padding:6px 12px;background:rgba(248, 244, 238, 0.9);border-radius:8px;border:1px dashed #d0c0d0;line-height:1.8}
         .result-card.ninecode .code-steps .highlight{color:#b8863a;font-weight:700}
+        .result-card.ninecode .final-code{font-size:28px;font-weight:700;color:#b8863a;text-align:center;padding:8px 0;letter-spacing:2px}
 
         .letters-info{background:rgba(252, 243, 232, 0.9);border-radius:12px;padding:10px 16px;margin-top:8px;border:1px solid #e8dccc;font-size:14px;text-align:left}
         .letters-info .vowel{color:#b34a3a;font-weight:700}
@@ -413,8 +414,7 @@
                 steps.push({
                     label: 'Финальный код',
                     digits: blockcode.slice(),
-                    display: blockcode.join(' '),
-                    note: '✅ 9 цифр — код готов'
+                    display: blockcode.join(' ')
                 });
                 break;
             }
@@ -464,8 +464,13 @@
             blockcode = AddedBlockcode;
         }
         
+        // Формируем красивый вывод с пробелами
+        let finalCode = blockcode.join('');
+        let formattedCode = finalCode.slice(0, 3) + ' ' + finalCode.slice(3, 6) + ' ' + finalCode.slice(6, 9);
+        
         return {
-            nineCode: blockcode.join(''),
+            nineCode: finalCode,
+            formattedCode: formattedCode,
             steps: steps
         };
     }
@@ -604,9 +609,11 @@
         
         let nineCardHtml = '';
         let nineCodeFinal = '';
+        let nineCodeFormatted = '';
         if (isLetters || !isOnlyDigits) {
             const nineResult = calculate9DigitCode(blockcode.slice());
             nineCodeFinal = nineResult.nineCode;
+            nineCodeFormatted = nineResult.formattedCode;
             
             let stepsHtml = '';
             for (let step of nineResult.steps) {
@@ -626,6 +633,7 @@
                 stepsHtml += pairsHtml;
             }
             
+            // Подсчёт итоговой цифры 9-значного кода
             const nineDigits = nineCodeFinal.split('').map(Number);
             let nineSum = 0;
             let nineSumStr = '';
@@ -649,7 +657,7 @@
                 <div class="result-card ninecode">
                     <div class="card-title">🔢 9-значный код</div>
                     <div style="font-size:13px;color:#6a4a6a;margin-bottom:4px;">Оцифровка: ${blockcode.join('')}</div>
-                    <div class="code-display" style="font-size:28px;color:#b8863a;">${nineCodeFinal}</div>
+                    <div class="final-code">${nineCodeFormatted}</div>
                     <div class="code-steps">${stepsHtml}</div>
                     <div class="card-number" style="color:#5a3e2b;">${nineFinal}</div>
                     <div class="card-sum" style="border-color:#c8b0c8;">${nineSumDisplay}</div>
@@ -710,7 +718,7 @@
         container.innerHTML = gridHtml;
         
         const resultDisplay = isOnlyDigits ? `${codeFinal} / ${finalNumber}` : `${finalNumber}`;
-        addHistoryEntry(input.trim(), resultDisplay, mantraSoundRow, codeFinal, nineCodeFinal);
+        addHistoryEntry(input.trim(), resultDisplay, mantraSoundRow, codeFinal, nineCodeFormatted);
         
         let stats = [];
         if (letterCount > 0) stats.push(`букв: ${letterCount}`);
@@ -803,7 +811,6 @@
     window.onload = function() {
         updateTable();
         loadHistory();
-        // Автоматический расчёт примера
         setTimeout(calculate, 150);
         if (window.location.protocol !== 'file:') {
             document.getElementById('shareButtons').style.display = 'flex';
