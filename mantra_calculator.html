@@ -329,131 +329,87 @@
     }
     
     // ============================================
-    // РАСЧЁТ 9-ЗНАЧНОГО КОДА (БЕЗ НУЛЕЙ)
+    // РАСЧЁТ 9-ЗНАЧНОГО КОДА (ИЗ СТАРОГО ЧАЙНИКА)
     // ============================================
     
-    function calculateNineCode(text) {
-        const clean = text.toLowerCase().replace(/\s/g, '');
-        if (!clean) return null;
-        
-        // Переводим буквы в цифры (0 пропускаем!)
-        let digits = '';
-        let vowels = [];
-        let consonants = [];
-        
-        for (let char of clean) {
-            const val = MANTRA_MAP[char];
-            if (val !== undefined && val !== 0) {
-                digits += val;
-                if (VOWELS.includes(char)) {
-                    vowels.push(char);
-                } else {
-                    consonants.push(char);
-                }
-            }
-        }
-        
-        if (digits.length === 0) return null;
-        
-        let currentDigits = digits.split('').map(Number);
-        let allSteps = [];
+    function calculate9DigitCode(blockcode) {
+        let BlockcodeAsString = "";
+        let steps = [];
         let stepIndex = 0;
-        let finalDigits = [];
         
-        // Если ровно 9 цифр — оставляем как есть
-        if (currentDigits.length === 9) {
-            finalDigits = currentDigits.slice();
-            allSteps.push({
-                label: 'Исходный ряд',
-                digits: finalDigits.slice(),
-                display: finalDigits.join(' '),
-                note: '✅ 9 цифр — код готов'
-            });
-        } else {
-            // Иначе сворачиваем до 3 цифр
-            allSteps.push({
-                label: 'Исходный ряд',
-                digits: currentDigits.slice(),
-                display: currentDigits.join(' ')
-            });
+        // Сохраняем исходный ряд
+        steps.push({
+            label: 'Исходный ряд',
+            digits: blockcode.slice(),
+            display: blockcode.join(' ')
+        });
+        
+        while (true) {
+            BlockcodeAsString = blockcode.join('');
+            let BlockcodeAsStringZeroCount = BlockcodeAsString.split("0").length - 1;
             
-            while (currentDigits.length > 3) {
-                let nextDigits = [];
-                let pairs = [];
-                
-                for (let i = 0; i < currentDigits.length; i += 2) {
-                    if (i + 1 < currentDigits.length) {
-                        const sum = currentDigits[i] + currentDigits[i + 1];
-                        // 0 не добавляем!
-                        if (sum !== 0) {
-                            nextDigits.push(sum);
-                        }
-                        pairs.push(`${currentDigits[i]}+${currentDigits[i+1]}=${sum}`);
-                    } else {
-                        // 0 не добавляем!
-                        if (currentDigits[i] !== 0) {
-                            nextDigits.push(currentDigits[i]);
-                        }
-                        pairs.push(`${currentDigits[i]} (перенос)`);
-                    }
-                }
-                
-                stepIndex++;
-                allSteps.push({
-                    label: `Шаг ${stepIndex}`,
-                    digits: nextDigits.slice(),
-                    display: nextDigits.join(' '),
-                    pairs: pairs
+            // Если 9 цифр и нет нулей — готово!
+            if (BlockcodeAsStringZeroCount === 0 && BlockcodeAsString.length === 9) {
+                steps.push({
+                    label: 'Финальный код',
+                    digits: blockcode.slice(),
+                    display: blockcode.join(' '),
+                    note: '✅ 9 цифр — код готов'
                 });
-                
-                currentDigits = nextDigits;
+                break;
             }
             
-            // Добавляем 369
-            finalDigits = currentDigits.slice();
-            finalDigits.push(3, 6, 9);
-            
-            allSteps.push({
-                label: 'Добавляем 369',
-                digits: finalDigits.slice(),
-                display: finalDigits.join(' '),
-                note: '➕ Добавлены 3, 6, 9'
-            });
-            
-            // Если получилось больше 9 — обрезаем
-            if (finalDigits.length > 9) {
-                finalDigits = finalDigits.slice(0, 9);
-            }
-            
-            // Если в коде есть 0 — удаляем и добиваем до 9
-            let nineCodeStr = finalDigits.join('');
-            if (nineCodeStr.includes('0')) {
-                nineCodeStr = nineCodeStr.replace(/0/g, '');
-                // Добавляем 369 пока не станет 9 цифр
-                while (nineCodeStr.length < 9) {
-                    nineCodeStr += '369';
-                }
-                if (nineCodeStr.length > 9) {
-                    nineCodeStr = nineCodeStr.slice(0, 9);
-                }
-                finalDigits = nineCodeStr.split('').map(Number);
-                allSteps.push({
-                    label: 'Удаляем нули',
-                    digits: finalDigits.slice(),
-                    display: finalDigits.join(' '),
-                    note: '🧹 0 удалены, добито до 9 цифр'
+            // Если меньше 9 цифр — добавляем 369
+            if (BlockcodeAsString.length < 9) {
+                blockcode = blockcode.concat([3, 6, 9]);
+                steps.push({
+                    label: 'Добавляем 369',
+                    digits: blockcode.slice(),
+                    display: blockcode.join(' '),
+                    note: '➕ Добавлены 3, 6, 9'
                 });
+                continue;
             }
+            
+            // Особый случай: 10 цифр, один ноль — убираем ноль
+            if (BlockcodeAsString.length === 10 && BlockcodeAsStringZeroCount === 1) {
+                BlockcodeAsString = BlockcodeAsString.replace("0", "");
+                blockcode = BlockcodeAsString.split('').map(Number);
+                steps.push({
+                    label: 'Убираем ноль',
+                    digits: blockcode.slice(),
+                    display: blockcode.join(' '),
+                    note: '🧹 0 удалён'
+                });
+                break;
+            }
+            
+            // Парное сложение
+            let AddedBlockcode = [];
+            let pairs = [];
+            for (let i = 0; i < blockcode.length; i += 2) {
+                if (i + 1 < blockcode.length) {
+                    const sum = blockcode[i] + blockcode[i + 1];
+                    AddedBlockcode.push(sum);
+                    pairs.push(`${blockcode[i]}+${blockcode[i+1]}=${sum}`);
+                } else {
+                    AddedBlockcode.push(blockcode[i]);
+                    pairs.push(`${blockcode[i]} (перенос)`);
+                }
+            }
+            stepIndex++;
+            steps.push({
+                label: `Шаг ${stepIndex}`,
+                digits: AddedBlockcode.slice(),
+                display: AddedBlockcode.join(' '),
+                pairs: pairs
+            });
+            blockcode = AddedBlockcode;
         }
-        
-        let nineCode = finalDigits.join('');
         
         return {
-            nineCode: nineCode,
-            steps: allSteps,
-            vowels: vowels,
-            consonants: consonants,
-            originalDigits: digits
+            nineCode: blockcode.join(''),
+            steps: steps
         };
     }
     
@@ -502,6 +458,7 @@
         let vowelsFound = [];
         let consonantsFound = [];
         let sumString = '';
+        let blockcode = [];
         
         for (let i = 0; i < textToProcess.length; i++) {
             const char = textToProcess[i];
@@ -514,6 +471,7 @@
                 digitCount++;
                 if (sumString) sumString += '+';
                 sumString += digit;
+                blockcode.push(digit);
                 continue;
             }
             
@@ -525,6 +483,7 @@
                 letterCount++;
                 if (sumString) sumString += '+';
                 sumString += value;
+                blockcode.push(value);
                 
                 const isVowel = VOWELS.includes(lower);
                 if (isVowel) {
@@ -592,64 +551,63 @@
         let nineCardHtml = '';
         let nineCodeFinal = '';
         if (isLetters || !isOnlyDigits) {
-            const nineResult = calculateNineCode(input);
-            if (nineResult) {
-                nineCodeFinal = nineResult.nineCode;
+            // Используем алгоритм из старого Чайника
+            const nineResult = calculate9DigitCode(blockcode.slice());
+            nineCodeFinal = nineResult.nineCode;
+            
+            let stepsHtml = '';
+            for (let step of nineResult.steps) {
+                let label = step.label;
+                let display = step.display;
+                let pairsHtml = '';
                 
-                let stepsHtml = '';
-                for (let step of nineResult.steps) {
-                    let label = step.label;
-                    let display = step.display;
-                    let pairsHtml = '';
-                    
-                    if (step.pairs && step.pairs.length > 0 && step.pairs[0] !== '') {
-                        pairsHtml = `<div style="color:#a0806a;font-size:12px;padding-left:20px;">${step.pairs.join(' | ')}</div>`;
-                    }
-                    
-                    if (step.note) {
-                        stepsHtml += `<div>${label}: ${display} <span style="color:#a0806a;font-size:12px;">${step.note}</span></div>`;
-                    } else {
-                        stepsHtml += `<div>${label}: ${display}</div>`;
-                    }
-                    stepsHtml += pairsHtml;
+                if (step.pairs && step.pairs.length > 0 && step.pairs[0] !== '') {
+                    pairsHtml = `<div style="color:#a0806a;font-size:12px;padding-left:20px;">${step.pairs.join(' | ')}</div>`;
                 }
                 
-                // Подсчёт итоговой цифры 9-значного кода
-                const nineDigits = nineCodeFinal.split('').map(Number);
-                let nineSum = 0;
-                let nineSumStr = '';
-                for (let d of nineDigits) {
-                    nineSum += d;
-                    if (nineSumStr) nineSumStr += '+';
-                    nineSumStr += d;
+                if (step.note) {
+                    stepsHtml += `<div>${label}: ${display} <span style="color:#a0806a;font-size:12px;">${step.note}</span></div>`;
+                } else {
+                    stepsHtml += `<div>${label}: ${display}</div>`;
                 }
-                const nineReduction = reduceToSingleDigit(nineSum);
-                const nineFinal = nineReduction.final;
-                let nineSumDisplay = nineSumStr + ' = ' + nineSum;
-                if (nineReduction.steps.length > 1) {
-                    nineSumDisplay += ' → ' + nineReduction.steps.join(' → ');
-                }
-                nineSumDisplay += ' = ' + nineFinal;
-                
-                let nineVowels = nineResult.vowels.length > 0 ? nineResult.vowels.join(', ') : '—';
-                let nineConsonants = nineResult.consonants.length > 0 ? nineResult.consonants.join(', ') : '—';
-                
-                nineCardHtml = `
-                    <div class="result-card ninecode">
-                        <div class="card-title">🔢 9-значный код</div>
-                        <div style="font-size:13px;color:#6a4a6a;margin-bottom:4px;">Оцифровка: ${nineResult.originalDigits}</div>
-                        <div class="code-display" style="font-size:28px;color:#4a2a4a;">${nineCodeFinal}</div>
-                        <div class="code-steps">${stepsHtml}</div>
-                        <div class="card-number" style="color:#4a2a4a;">${nineFinal}</div>
-                        <div class="card-sum" style="border-color:#c8b0c8;">${nineSumDisplay}</div>
-                        <div class="letters-info" style="background:#f4eef4;border-color:#d0c0d0;">
-                            <span class="label">🔊 Гласные:</span> <span class="vowel">${nineVowels}</span>
-                            &nbsp;|&nbsp;
-                            <span class="label">🔇 Согласные:</span> <span class="consonant">${nineConsonants}</span>
-                        </div>
-                    </div>
-                `;
+                stepsHtml += pairsHtml;
             }
+            
+            // Подсчёт итоговой цифры 9-значного кода
+            const nineDigits = nineCodeFinal.split('').map(Number);
+            let nineSum = 0;
+            let nineSumStr = '';
+            for (let d of nineDigits) {
+                nineSum += d;
+                if (nineSumStr) nineSumStr += '+';
+                nineSumStr += d;
+            }
+            const nineReduction = reduceToSingleDigit(nineSum);
+            const nineFinal = nineReduction.final;
+            let nineSumDisplay = nineSumStr + ' = ' + nineSum;
+            if (nineReduction.steps.length > 1) {
+                nineSumDisplay += ' → ' + nineReduction.steps.join(' → ');
+            }
+            nineSumDisplay += ' = ' + nineFinal;
+            
+            let nineVowels = vowelsFound.length > 0 ? vowelsFound.join(', ') : '—';
+            let nineConsonants = consonantsFound.length > 0 ? consonantsFound.join(', ') : '—';
+            
+            nineCardHtml = `
+                <div class="result-card ninecode">
+                    <div class="card-title">🔢 9-значный код</div>
+                    <div style="font-size:13px;color:#6a4a6a;margin-bottom:4px;">Оцифровка: ${blockcode.join('')}</div>
+                    <div class="code-display" style="font-size:28px;color:#4a2a4a;">${nineCodeFinal}</div>
+                    <div class="code-steps">${stepsHtml}</div>
+                    <div class="card-number" style="color:#4a2a4a;">${nineFinal}</div>
+                    <div class="card-sum" style="border-color:#c8b0c8;">${nineSumDisplay}</div>
+                    <div class="letters-info" style="background:#f4eef4;border-color:#d0c0d0;">
+                        <span class="label">🔊 Гласные:</span> <span class="vowel">${nineVowels}</span>
+                        &nbsp;|&nbsp;
+                        <span class="label">🔇 Согласные:</span> <span class="consonant">${nineConsonants}</span>
+                    </div>
+                </div>
+            `;
         }
         
         // ===== МАНТРА =====
