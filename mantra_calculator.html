@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🫖 Чайник-калькулятор</title>
+    <title>🫖 Сантария | Чайник-калькулятор</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🫖</text></svg>">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#fdf6ed,#f0e6d8);min-height:100vh;padding:20px;display:flex;justify-content:center;align-items:flex-start}
@@ -98,7 +99,7 @@
 <div class="container">
     <div class="header">
         <div class="kettle">🫖</div>
-        <h1>Чайник-<span>калькулятор</span></h1>
+        <h1>Сантария <span>| Чайник-калькулятор</span></h1>
     </div>
     <div class="subtitle">
         <span class="emoji">📖</span> Код → звуки → цифры → одно число
@@ -133,7 +134,7 @@
     <div class="info-row">
         <span class="badge" id="letterCount">Символов: 0</span>
         <span class="badge" id="reductionInfo">Свёрнуто: —</span>
-        <span class="badge">🫖 чайник-калькулятор</span>
+        <span class="badge">🫖 Сантария</span>
     </div>
     
     <div class="table-ref" id="tableRef">
@@ -151,6 +152,8 @@
     
     <div class="footer">
         ☕ Всё просто: код → звуки → цифры → одно число (1-9)
+        <br>
+        <span style="font-size:12px; color:#a0806a;">✨ Сантария ✨</span>
     </div>
 </div>
 
@@ -233,7 +236,6 @@
             timestamp: timestamp || new Date().toLocaleString('ru-RU')
         };
         history.unshift(entry);
-        // Ограничиваем историю 50 записями
         if (history.length > 50) history.pop();
         saveHistory();
     }
@@ -348,14 +350,12 @@
         let isDecoded = false;
         let codeResult = '';
         
-        // Если только цифры — декодируем
         if (isOnlyDigits) {
             decodedText = decodeCodeToLetters(cleanInput);
             textToProcess = decodedText;
             isDecoded = true;
         }
         
-        // ===== ОБЩИЙ РАСЧЁТ =====
         let total = 0;
         let validCount = 0;
         let unknownChars = [];
@@ -419,7 +419,6 @@
         }
         sumDisplay += ' = ' + finalNumber;
         
-        // ===== РАСЧЁТ КОДА =====
         let codeCardHtml = '';
         let codeFinal = '';
         if (isOnlyDigits) {
@@ -450,7 +449,6 @@
             `;
         }
         
-        // ===== МАНТРА =====
         let lettersHtml = '';
         if (vowelsFound.length > 0 || consonantsFound.length > 0) {
             let infoHtml = '';
@@ -487,7 +485,6 @@
             </div>
         `;
         
-        // Собираем всё вместе
         let gridHtml = '';
         if (isOnlyDigits) {
             gridHtml = `<div class="results-grid">${codeCardHtml}${mantraCardHtml}</div>`;
@@ -497,11 +494,9 @@
         
         container.innerHTML = gridHtml;
         
-        // ===== СОХРАНЯЕМ В ИСТОРИЮ =====
         const resultDisplay = isOnlyDigits ? `${codeFinal} / ${finalNumber}` : `${finalNumber}`;
         addHistoryEntry(input.trim(), resultDisplay, mantraSoundRow, codeFinal);
         
-        // Инфо
         let stats = [];
         if (letterCount > 0) stats.push(`букв: ${letterCount}`);
         if (digitCount > 0) stats.push(`цифр: ${digitCount}`);
@@ -522,7 +517,6 @@
             document.getElementById('shareButtons').style.display = 'flex';
         }
         
-        // Обновляем счётчик истории
         document.getElementById('historyCount').textContent = history.length;
     }
     
@@ -569,19 +563,19 @@
     
     function shareTelegram() {
         const url = getShareUrl();
-        const text = encodeURIComponent('🫖 Чайник-калькулятор — перевожу код в звуки и обратно!');
+        const text = encodeURIComponent('🫖 Сантария | Чайник-калькулятор — перевожу код в звуки и обратно!');
         window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${text}`, '_blank');
     }
     
     function shareWhatsApp() {
         const url = getShareUrl();
-        const text = encodeURIComponent('🫖 Чайник-калькулятор — узнайте своё число!');
+        const text = encodeURIComponent('🫖 Сантария | Чайник-калькулятор — узнайте своё число!');
         window.open(`https://api.whatsapp.com/send?text=${text}%20${encodeURIComponent(url)}`, '_blank');
     }
     
     function shareVK() {
         const url = getShareUrl();
-        window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=🫖 Чайник-калькулятор`, '_blank');
+        window.open(`https://vk.com/share.php?url=${encodeURIComponent(url)}&title=🫖 Сантария | Чайник-калькулятор`, '_blank');
     }
     
     function copyLink() {
