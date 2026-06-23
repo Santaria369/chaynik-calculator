@@ -14,17 +14,22 @@
         .header h1 span{color:#b8863a}
         .subtitle{color:#8b7355;font-size:15px;margin-bottom:22px;padding-bottom:16px;border-bottom:2px dashed #e8dccc;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
         .subtitle .emoji{font-size:20px}
-        textarea{width:100%;height:120px;padding:16px 18px;font-size:20px;border:2px solid #e8dccc;border-radius:18px;font-family:inherit;resize:vertical;transition:.3s;background:#fdfaf6}
-        textarea:focus{border-color:#b8863a;outline:none;box-shadow:0 0 0 4px rgba(184,134,58,0.1);background:#fffcf8}
-        textarea::placeholder{color:#bba28c}
-        .btn-group{display:flex;gap:12px;margin:16px 0 20px;flex-wrap:wrap}
-        .btn-group button{flex:1;min-width:100px;padding:14px 18px;border:none;border-radius:40px;font-size:17px;font-weight:600;cursor:pointer;transition:.2s}
+        
+        /* Поле ввода */
+        .input-row{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
+        .input-row textarea{flex:1;min-width:200px;height:60px;padding:14px 18px;font-size:20px;border:2px solid #e8dccc;border-radius:18px;font-family:inherit;resize:vertical;transition:.3s;background:#fdfaf6}
+        .input-row textarea:focus{border-color:#b8863a;outline:none;box-shadow:0 0 0 4px rgba(184,134,58,0.1);background:#fffcf8}
+        .input-row textarea::placeholder{color:#bba28c}
+        
+        .btn-group{display:flex;gap:10px;flex-wrap:wrap}
+        .btn-group button{padding:14px 20px;border:none;border-radius:40px;font-size:16px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
         .btn-calc{background:#b8863a;color:#fff;box-shadow:0 4px 15px rgba(184,134,58,0.3)}
         .btn-calc:hover{background:#9e6f2e;transform:scale(1.02)}
         .btn-clear{background:#e8dccc;color:#5a3e2b}
         .btn-clear:hover{background:#dccfc0}
         .btn-decode{background:#6b8a6b;color:#fff;box-shadow:0 4px 15px rgba(80,120,80,0.3)}
         .btn-decode:hover{background:#4a6a4a;transform:scale(1.02)}
+        
         .error{color:#b34a3a;font-size:14px;padding:8px 16px;background:#fde8e0;border-radius:30px;display:none;margin-top:8px}
         .error.show{display:inline-block}
         .info-row{display:flex;justify-content:space-between;font-size:13px;color:#8b7355;margin:10px 0 4px;flex-wrap:wrap;gap:6px}
@@ -56,16 +61,13 @@
         .result-card.mantra{border-color:#b8863a;background:#fcf6ee}
         .result-card.mantra .card-title{color:#8b7355}
         .result-card.mantra .card-number{color:#5a3e2b}
+        .result-card.mantra .sound-row{font-size:18px;font-weight:700;color:#b8863a;word-break:break-all;margin:6px 0 4px;padding:8px 12px;background:#fffcf8;border-radius:10px;border:1px solid #e8dccc}
+        .result-card.mantra .sound-label{font-size:12px;color:#a0806a}
         
         .result-card.code{border-color:#6b8a6b;background:#f6faf6}
         .result-card.code .card-title{color:#5a7a5a}
         .result-card.code .card-number{color:#2a5a2a}
-
-        .decoded-block{background:#f8f4ee;border-radius:14px;padding:14px 18px;margin:8px 0;border:1px solid #e8dccc}
-        .decoded-block .label{color:#8b7355;font-size:13px;font-weight:600}
-        .decoded-block .sound-row{font-size:20px;font-weight:700;color:#b8863a;word-break:break-all;margin-top:4px}
-        .decoded-block .steps-row{font-size:14px;font-family:'Courier New',monospace;color:#5a3e2b;margin-top:4px;line-height:1.8}
-        .decoded-block .steps-row .tag{display:inline-block;background:#fffcf8;padding:0 10px;border-radius:20px;border:1px solid #e0d0c0;font-size:12px;margin:2px 2px 2px 0}
+        .result-card.code .code-display{font-size:20px;font-weight:700;color:#2a5a2a;word-break:break-all;margin:4px 0;padding:6px 12px;background:#eef5ee;border-radius:10px;border:1px solid #c8dcc8;font-family:'Courier New',monospace}
 
         .letters-info{background:#fcf3e8;border-radius:12px;padding:10px 16px;margin-top:8px;border:1px solid #e8dccc;font-size:14px;display:none;text-align:left}
         .letters-info .vowel{color:#b34a3a;font-weight:700}
@@ -87,12 +89,13 @@
         <span style="margin-left:auto;font-size:13px;color:#bba28c;">☕ для чайников</span>
     </div>
     
-    <textarea id="inputText" placeholder="Введите код или мантру...&#10;Например: 369108358">369108358</textarea>
-    
-    <div class="btn-group">
-        <button class="btn-calc" onclick="calculate()">🧮 Заварить!</button>
-        <button class="btn-decode" onclick="decodeCode()">🔀 Код → звуки</button>
-        <button class="btn-clear" onclick="clearAll()">✕ Очистить</button>
+    <div class="input-row">
+        <textarea id="inputText" placeholder="Введите код... например: 369108358">369108358</textarea>
+        <div class="btn-group">
+            <button class="btn-calc" onclick="calculate()">🧮 Заварить!</button>
+            <button class="btn-decode" onclick="decodeCode()">🔀 Код → звуки</button>
+            <button class="btn-clear" onclick="clearAll()">✕ Очистить</button>
+        </div>
     </div>
     
     <div id="resultsContainer"></div>
@@ -140,7 +143,6 @@
         'з':9,'р':9,'щ':9
     };
     
-    // Для декодирования: цифра → все буквы, которые ей соответствуют
     const MANTRA_DECODE_ALL = {
         '1': 'аисъ',
         '2': 'бйты',
@@ -186,8 +188,6 @@
     // ФУНКЦИИ
     // ============================================
     
-    function getMap() { return MANTRA_MAP; }
-    
     function updateTable() {
         const container = document.getElementById('tableContent');
         container.innerHTML = TABLES.mantra.map(row => `<div>${row}</div>`).join('');
@@ -204,10 +204,6 @@
         }
         return { final: result, steps };
     }
-    
-    // ============================================
-    // ДЕКОДИРОВАНИЕ: цифра → ВСЕ буквы
-    // ============================================
     
     function decodeCodeToLetters(code) {
         const digits = String(code).replace(/\s/g, '').split('');
@@ -260,8 +256,9 @@
         let decodedText = '';
         let decodeSteps = [];
         let isDecoded = false;
+        let originalCode = cleanInput;
         
-        // Если только цифры — декодируем (ВСЕ буквы для каждой цифры)
+        // Если только цифры — декодируем
         if (isOnlyDigits) {
             decodeSteps = getDecodeSteps(cleanInput);
             decodedText = decodeCodeToLetters(cleanInput);
@@ -270,7 +267,6 @@
         }
         
         // ===== ОБЩИЙ РАСЧЁТ =====
-        const map = getMap();
         let total = 0;
         let validCount = 0;
         let unknownChars = [];
@@ -295,7 +291,7 @@
             }
             
             const lower = char.toLowerCase();
-            const value = map[lower];
+            const value = MANTRA_MAP[lower];
             if (value !== undefined) {
                 total += value;
                 validCount++;
@@ -328,50 +324,13 @@
         const reduction = reduceToSingleDigit(total);
         const finalNumber = reduction.final;
         
-        // Формируем сумму
         let sumDisplay = sumString + ' = ' + total;
         if (reduction.steps.length > 1) {
             sumDisplay += ' → ' + reduction.steps.join(' → ');
         }
         sumDisplay += ' = ' + finalNumber;
         
-        // ===== БЛОК ДЕКОДИРОВАНИЯ =====
-        let decodeHtml = '';
-        if (isDecoded && isOnlyDigits) {
-            let stepsHtml = '';
-            let soundRow = '';
-            for (let step of decodeSteps) {
-                if (step.digit === '0') {
-                    stepsHtml += `<span class="tag" style="color:#999;">${step.digit} → ${step.letters}</span> `;
-                } else {
-                    stepsHtml += `<span class="tag">${step.digit} → ${step.letters}</span> `;
-                    soundRow += step.letters;
-                }
-            }
-            decodeHtml = `
-                <div class="decoded-block">
-                    <div class="label">🔀 Перевод цифр в звуки:</div>
-                    <div class="steps-row">${stepsHtml}</div>
-                    <div class="sound-row">${soundRow}</div>
-                </div>
-            `;
-        }
-        
-        // ===== БЛОК ГЛАСНЫХ/СОГЛАСНЫХ =====
-        let lettersHtml = '';
-        if (vowelsFound.length > 0 || consonantsFound.length > 0) {
-            let infoHtml = '';
-            if (vowelsFound.length > 0) {
-                infoHtml += `<span class="label">🔊 Гласные:</span> <span class="vowel">${vowelsFound.join(', ')}</span>`;
-                if (consonantsFound.length > 0) infoHtml += ' &nbsp;|&nbsp; ';
-            }
-            if (consonantsFound.length > 0) {
-                infoHtml += `<span class="label">🔇 Согласные:</span> <span class="consonant">${consonantsFound.join(', ')}</span>`;
-            }
-            lettersHtml = `<div class="letters-info" style="display:block;">${infoHtml}</div>`;
-        }
-        
-        // ===== РАСЧЁТ КОДА (только для цифр) =====
+        // ===== РАСЧЁТ КОДА =====
         let codeCardHtml = '';
         if (isOnlyDigits) {
             const digits = cleanInput.split('');
@@ -393,6 +352,7 @@
             codeCardHtml = `
                 <div class="result-card code">
                     <div class="card-title">📊 Расчёт кода</div>
+                    <div class="code-display">${cleanInput}</div>
                     <div class="card-number">${codeReduction.final}</div>
                     <div class="card-sum">${codeSumDisplay}</div>
                     <div class="card-interp">${INTERPRETATIONS[codeReduction.final] || ''}</div>
@@ -400,10 +360,42 @@
             `;
         }
         
-        // ===== КАРТОЧКА МАНТРЫ =====
+        // ===== МАНТРА =====
+        // Собираем звуковой ряд с пошаговым переводом
+        let soundRow = '';
+        let stepsHtml = '';
+        if (isDecoded && isOnlyDigits) {
+            for (let step of decodeSteps) {
+                if (step.digit === '0') {
+                    stepsHtml += `<span class="tag" style="color:#999;">${step.digit} → ${step.letters}</span> `;
+                } else {
+                    stepsHtml += `<span class="tag">${step.digit} → ${step.letters}</span> `;
+                    soundRow += step.letters;
+                }
+            }
+        } else {
+            soundRow = textToProcess;
+        }
+        
+        // Гласные/согласные
+        let lettersHtml = '';
+        if (vowelsFound.length > 0 || consonantsFound.length > 0) {
+            let infoHtml = '';
+            if (vowelsFound.length > 0) {
+                infoHtml += `<span class="label">🔊 Гласные:</span> <span class="vowel">${vowelsFound.join(', ')}</span>`;
+                if (consonantsFound.length > 0) infoHtml += ' &nbsp;|&nbsp; ';
+            }
+            if (consonantsFound.length > 0) {
+                infoHtml += `<span class="label">🔇 Согласные:</span> <span class="consonant">${consonantsFound.join(', ')}</span>`;
+            }
+            lettersHtml = `<div class="letters-info" style="display:block;">${infoHtml}</div>`;
+        }
+        
         const mantraCardHtml = `
             <div class="result-card mantra">
                 <div class="card-title">🔮 Мантра</div>
+                ${isDecoded ? `<div style="font-size:12px;color:#a0806a;margin-bottom:4px;">🔀 ${stepsHtml}</div>` : ''}
+                <div class="sound-row">${soundRow}</div>
                 <div class="card-number">${finalNumber}</div>
                 <div class="card-sum">${sumDisplay}</div>
                 <div class="card-interp">${INTERPRETATIONS[finalNumber] || ''}</div>
@@ -419,7 +411,7 @@
             gridHtml = `<div class="results-grid" style="grid-template-columns:1fr;">${mantraCardHtml}</div>`;
         }
         
-        container.innerHTML = decodeHtml + gridHtml;
+        container.innerHTML = gridHtml;
         
         // Инфо
         let stats = [];
@@ -444,7 +436,7 @@
     }
     
     // ============================================
-    // ДЕКОДИРОВАТЬ КОД
+    // ДЕКОДИРОВАТЬ КОД → ПОКАЗАТЬ МАНТРУ
     // ============================================
     
     function decodeCode() {
@@ -458,13 +450,17 @@
             return;
         }
         
+        // Декодируем и показываем в поле ввода
         const decoded = decodeCodeToLetters(cleanInput);
+        // НО! Сохраняем код в атрибут, чтобы показывать оба
         document.getElementById('inputText').value = decoded;
+        document.getElementById('inputText').dataset.originalCode = cleanInput;
         calculate();
     }
     
     function clearAll() {
         document.getElementById('inputText').value = '';
+        document.getElementById('inputText').dataset.originalCode = '';
         document.getElementById('resultsContainer').innerHTML = '';
         document.getElementById('letterCount').textContent = 'Символов: 0';
         document.getElementById('reductionInfo').textContent = 'Свёрнуто: —';
