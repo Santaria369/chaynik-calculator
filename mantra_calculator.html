@@ -329,7 +329,7 @@
     }
     
     // ============================================
-    // РАСЧЁТ 9-ЗНАЧНОГО КОДА (С УЧЁТОМ 0)
+    // РАСЧЁТ 9-ЗНАЧНОГО КОДА
     // ============================================
     
     function calculateNineCode(text) {
@@ -343,9 +343,7 @@
         
         for (let char of clean) {
             const val = MANTRA_MAP[char];
-            if (val !== undefined) {
-                // 0 пропускаем!
-                if (val === 0) continue;
+            if (val !== undefined && val !== 0) {
                 digits += val;
                 if (VOWELS.includes(char)) {
                     vowels.push(char);
@@ -357,72 +355,75 @@
         
         if (digits.length === 0) return null;
         
-        // === ПОШАГОВОЕ СВЁРТЫВАНИЕ ===
         let currentDigits = digits.split('').map(Number);
         let allSteps = [];
         let stepIndex = 0;
+        let finalDigits = [];
         
-        allSteps.push({
-            label: 'Исходный ряд',
-            digits: currentDigits.slice(),
-            display: currentDigits.join(' ')
-        });
-        
-        // Сворачиваем попарно, пока не получим 9 цифр или меньше
-        while (currentDigits.length > 9) {
-            let nextDigits = [];
-            let pairs = [];
-            
-            for (let i = 0; i < currentDigits.length; i += 2) {
-                if (i + 1 < currentDigits.length) {
-                    const sum = currentDigits[i] + currentDigits[i + 1];
-                    nextDigits.push(sum);
-                    pairs.push(`${currentDigits[i]}+${currentDigits[i+1]}=${sum}`);
-                } else {
-                    nextDigits.push(currentDigits[i]);
-                    pairs.push(`${currentDigits[i]} (перенос)`);
-                }
-            }
-            
-            stepIndex++;
+        // Если ровно 9 цифр — оставляем как есть
+        if (currentDigits.length === 9) {
+            finalDigits = currentDigits.slice();
             allSteps.push({
-                label: `Шаг ${stepIndex}`,
-                digits: nextDigits.slice(),
-                display: nextDigits.join(' '),
-                pairs: pairs
+                label: 'Исходный ряд',
+                digits: finalDigits.slice(),
+                display: finalDigits.join(' '),
+                note: '✅ 9 цифр — код готов'
+            });
+        } else {
+            // Иначе сворачиваем до 3 цифр
+            allSteps.push({
+                label: 'Исходный ряд',
+                digits: currentDigits.slice(),
+                display: currentDigits.join(' ')
             });
             
-            currentDigits = nextDigits;
-        }
-        
-        // Теперь у нас 9 цифр или меньше
-        // Если меньше 9 — добавляем 369 до 9 цифр
-        let finalDigits = currentDigits.slice();
-        let added369 = false;
-        
-        if (finalDigits.length < 9) {
-            while (finalDigits.length < 9) {
-                if (finalDigits.length < 9) finalDigits.push(3);
-                if (finalDigits.length < 9) finalDigits.push(6);
-                if (finalDigits.length < 9) finalDigits.push(9);
+            while (currentDigits.length > 3) {
+                let nextDigits = [];
+                let pairs = [];
+                
+                for (let i = 0; i < currentDigits.length; i += 2) {
+                    if (i + 1 < currentDigits.length) {
+                        const sum = currentDigits[i] + currentDigits[i + 1];
+                        nextDigits.push(sum);
+                        pairs.push(`${currentDigits[i]}+${currentDigits[i+1]}=${sum}`);
+                    } else {
+                        nextDigits.push(currentDigits[i]);
+                        pairs.push(`${currentDigits[i]} (перенос)`);
+                    }
+                }
+                
+                stepIndex++;
+                allSteps.push({
+                    label: `Шаг ${stepIndex}`,
+                    digits: nextDigits.slice(),
+                    display: nextDigits.join(' '),
+                    pairs: pairs
+                });
+                
+                currentDigits = nextDigits;
             }
-            added369 = true;
-        }
-        
-        if (added369) {
+            
+            // Добавляем 369
+            finalDigits = currentDigits.slice();
+            finalDigits.push(3, 6, 9);
+            
             allSteps.push({
                 label: 'Добавляем 369',
                 digits: finalDigits.slice(),
                 display: finalDigits.join(' '),
                 note: '➕ Добавлены 3, 6, 9'
             });
-        } else {
-            allSteps.push({
-                label: 'Финальный код',
-                digits: finalDigits.slice(),
-                display: finalDigits.join(' '),
-                note: '✅ 9 цифр — код готов'
-            });
+            
+            // Если получилось больше 9 — обрезаем
+            if (finalDigits.length > 9) {
+                finalDigits = finalDigits.slice(0, 9);
+                allSteps.push({
+                    label: 'Финальный код',
+                    digits: finalDigits.slice(),
+                    display: finalDigits.join(' '),
+                    note: '✅ 9 цифр — код готов'
+                });
+            }
         }
         
         let nineCode = finalDigits.join('');
