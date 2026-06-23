@@ -28,6 +28,9 @@
         .btn-clear:hover{background:#dccfc0}
         .btn-decode{background:#6b8a6b;color:#fff;box-shadow:0 4px 15px rgba(80,120,80,0.3)}
         .btn-decode:hover{background:#4a6a4a;transform:scale(1.02)}
+        .btn-history{background:#8a7a6a;color:#fff;box-shadow:0 4px 15px rgba(120,100,80,0.3)}
+        .btn-history:hover{background:#6a5a4a;transform:scale(1.02)}
+        .btn-history.active{background:#b8863a}
         
         .error{color:#b34a3a;font-size:14px;padding:8px 16px;background:#fde8e0;border-radius:30px;display:none;margin-top:8px}
         .error.show{display:inline-block}
@@ -72,6 +75,21 @@
         .letters-info .consonant{color:#2a3a6a;font-weight:700}
         .letters-info .label{color:#8b7355;font-size:13px}
 
+        /* ===== ИСТОРИЯ ===== */
+        .history-panel{display:none;margin-top:12px;padding:16px 18px;background:#f8f4ee;border-radius:16px;border:1px solid #e8dccc;max-height:350px;overflow-y:auto}
+        .history-panel.open{display:block}
+        .history-panel .history-title{font-size:14px;font-weight:600;color:#5a3e2b;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+        .history-panel .history-title .count{font-weight:400;color:#a0806a;font-size:13px}
+        .history-item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:6px 10px;border-bottom:1px dashed #e8dccc;font-size:13px;align-items:center}
+        .history-item:last-child{border-bottom:none}
+        .history-item .h-number{font-weight:700;color:#b8863a;min-width:30px}
+        .history-item .h-code{font-family:'Courier New',monospace;color:#5a3e2b;word-break:break-all}
+        .history-item .h-result{font-weight:700;color:#5a3e2b;background:#fcf6ee;padding:0 12px;border-radius:20px;border:1px solid #e8dccc;white-space:nowrap}
+        .history-item .h-time{color:#a0806a;font-size:11px;white-space:nowrap}
+        .history-empty{color:#a0806a;text-align:center;padding:16px;font-style:italic}
+        .btn-clear-history{background:transparent;border:none;color:#b34a3a;cursor:pointer;font-size:13px;text-decoration:underline;padding:2px 8px}
+        .btn-clear-history:hover{color:#8a2a2a}
+
         @media(max-width:480px){.container{padding:18px}.result-card .card-number{font-size:36px}.header h1{font-size:24px}}
     </style>
 </head>
@@ -94,6 +112,18 @@
             <button class="btn-decode" onclick="decodeCode()">🔀 Код → звуки</button>
             <button class="btn-clear" onclick="clearAll()">✕ Очистить</button>
         </div>
+    </div>
+    
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn-history" id="historyToggle" onclick="toggleHistory()">📜 История (<span id="historyCount">0</span>)</button>
+    </div>
+    
+    <div class="history-panel" id="historyPanel">
+        <div class="history-title">
+            <span>📜 История расчётов</span>
+            <span class="count"><button class="btn-clear-history" onclick="clearHistory()">🗑️ Очистить историю</button></span>
+        </div>
+        <div id="historyList"></div>
     </div>
     
     <div id="resultsContainer"></div>
@@ -171,6 +201,95 @@
     };
     
     // ============================================
+    // ИСТОРИЯ
+    // ============================================
+    
+    let history = [];
+    let historyOpen = false;
+    
+    function loadHistory() {
+        try {
+            const saved = localStorage.getItem('chaynik_history');
+            if (saved) {
+                history = JSON.parse(saved);
+            }
+        } catch(e) { history = []; }
+        updateHistoryUI();
+    }
+    
+    function saveHistory() {
+        try {
+            localStorage.setItem('chaynik_history', JSON.stringify(history));
+        } catch(e) {}
+        updateHistoryUI();
+    }
+    
+    function addHistoryEntry(input, result, mantra, codeResult, timestamp) {
+        const entry = {
+            input: input,
+            result: result,
+            mantra: mantra || '',
+            codeResult: codeResult || '',
+            timestamp: timestamp || new Date().toLocaleString('ru-RU')
+        };
+        history.unshift(entry);
+        // Ограничиваем историю 50 записями
+        if (history.length > 50) history.pop();
+        saveHistory();
+    }
+    
+    function updateHistoryUI() {
+        const list = document.getElementById('historyList');
+        const count = document.getElementById('historyCount');
+        count.textContent = history.length;
+        
+        if (history.length === 0) {
+            list.innerHTML = '<div class="history-empty">История пуста</div>';
+            return;
+        }
+        
+        let html = '';
+        history.forEach((item, index) => {
+            const num = history.length - index;
+            let displayCode = item.input.length > 40 ? item.input.slice(0, 37) + '...' : item.input;
+            html += `
+                <div class="history-item">
+                    <span class="h-number">#${num}</span>
+                    <span class="h-code" title="${item.input}">${displayCode}</span>
+                    <span class="h-result">${item.result}</span>
+                    <span class="h-time">${item.timestamp}</span>
+                </div>
+            `;
+        });
+        list.innerHTML = html;
+        
+        if (historyOpen) {
+            document.getElementById('historyPanel').classList.add('open');
+        }
+    }
+    
+    function toggleHistory() {
+        historyOpen = !historyOpen;
+        const panel = document.getElementById('historyPanel');
+        const btn = document.getElementById('historyToggle');
+        if (historyOpen) {
+            panel.classList.add('open');
+            btn.classList.add('active');
+        } else {
+            panel.classList.remove('open');
+            btn.classList.remove('active');
+        }
+    }
+    
+    function clearHistory() {
+        if (confirm('🗑️ Очистить всю историю расчётов?')) {
+            history = [];
+            saveHistory();
+            updateHistoryUI();
+        }
+    }
+    
+    // ============================================
     // ФУНКЦИИ
     // ============================================
     
@@ -227,6 +346,7 @@
         let textToProcess = input;
         let decodedText = '';
         let isDecoded = false;
+        let codeResult = '';
         
         // Если только цифры — декодируем
         if (isOnlyDigits) {
@@ -299,20 +419,9 @@
         }
         sumDisplay += ' = ' + finalNumber;
         
-        // ===== ОЦИФРОВКА МАНТРЫ (для отображения) =====
-        let oцифровка = '';
-        if (isDecoded) {
-            for (let char of decodedText) {
-                const lower = char.toLowerCase();
-                const val = MANTRA_MAP[lower];
-                if (val !== undefined) {
-                    oцифровка += val;
-                }
-            }
-        }
-        
         // ===== РАСЧЁТ КОДА =====
         let codeCardHtml = '';
+        let codeFinal = '';
         if (isOnlyDigits) {
             const digits = cleanInput.split('');
             let codeSum = 0;
@@ -324,6 +433,7 @@
                 codeStr += num;
             }
             const codeReduction = reduceToSingleDigit(codeSum);
+            codeFinal = codeReduction.final;
             let codeSumDisplay = codeStr + ' = ' + codeSum;
             if (codeReduction.steps.length > 1) {
                 codeSumDisplay += ' → ' + codeReduction.steps.join(' → ');
@@ -355,6 +465,16 @@
         }
         
         let mantraSoundRow = isDecoded ? decodedText : textToProcess;
+        let oцифровка = '';
+        if (isDecoded) {
+            for (let char of decodedText) {
+                const lower = char.toLowerCase();
+                const val = MANTRA_MAP[lower];
+                if (val !== undefined) {
+                    oцифровка += val;
+                }
+            }
+        }
         
         const mantraCardHtml = `
             <div class="result-card mantra">
@@ -377,6 +497,10 @@
         
         container.innerHTML = gridHtml;
         
+        // ===== СОХРАНЯЕМ В ИСТОРИЮ =====
+        const resultDisplay = isOnlyDigits ? `${codeFinal} / ${finalNumber}` : `${finalNumber}`;
+        addHistoryEntry(input.trim(), resultDisplay, mantraSoundRow, codeFinal);
+        
         // Инфо
         let stats = [];
         if (letterCount > 0) stats.push(`букв: ${letterCount}`);
@@ -397,10 +521,13 @@
         if (!isLocal) {
             document.getElementById('shareButtons').style.display = 'flex';
         }
+        
+        // Обновляем счётчик истории
+        document.getElementById('historyCount').textContent = history.length;
     }
     
     // ============================================
-    // ДЕКОДИРОВАТЬ КОД → ПОКАЗАТЬ МАНТРУ
+    // ДЕКОДИРОВАТЬ КОД
     // ============================================
     
     function decodeCode() {
@@ -478,6 +605,7 @@
     
     window.onload = function() {
         updateTable();
+        loadHistory();
         setTimeout(calculate, 150);
         if (window.location.protocol !== 'file:') {
             document.getElementById('shareButtons').style.display = 'flex';
